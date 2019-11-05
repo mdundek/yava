@@ -1,75 +1,25 @@
 training:
 
   placeholders:
-    health_states:
-      - healthy
-      - unhealthy
-      - good for me
-      - bad for me
-      - good for you
-      - bad for you
-    question_sets:
-      - Do you have
-      - Are there
-      - I am looking for
+    SEND_PREFIX:
+      - Send
+      - Can you send
+      - Please send
 
   entities:
-    FOOD:
-      - bread
-      - candy
-      - olive oil
-      - potatos
-    FOOD(S):
-      - apples
-      - eggs
-      - snacks
-      - nutella sticks
-      - chocolat chip muffins
-    PERSON:
-      - me
-      - steve
-      - us
-      - celia
-    ITEM:
-      - beer
-      - glas of wine
-      - apple
-      - flower
-      - blanket
-    PLACE:
-      - barney's
-      - the hollywood meatpackers
-      - the black lion
+    CONTACT:
+      - Michael
+      - Becky
+      - Mom
+      - Pascal
 
   intents:
 
-    health:
-      - "Are those [FOOD(S)] {health_states}"
-      - "Is [FOOD] {health_states}"
-      - "Are [FOOD(S)] {health_states}"
-      - "Can you tell me if [FOOD(S)] are {health_states}"
-      - "Is it {health_states} to eat [FOOD(S)]"
-      - "Would you say that [FOOD] are {health_states}"
-      - "Would you recommend [FOOD(S)]"
+    send_email:
+      - "{SEND_PREFIX} an email to [CONTACT]"
+      - "{SEND_PREFIX} [CONTACT] an email"
 
-    availability:
-      - "{question_sets} [FOOD(S)]"
-      - "{question_sets} [FOOD(S)] available"
-      - "{question_sets} some [FOOD(S)] available"
-      - "{question_sets} [FOOD(S)] in stock"
-      - "{question_sets} some [FOOD(S)] in stock"
-      - "{question_sets} any [FOOD(S)] in stock"
-      - "{question_sets} any more [FOOD(S)] to sell"
-      - "{question_sets} [FOOD(S)], would you by any chance have some available"
-
-    get_something:
-      - "Grab [PERSON] a [ITEM]"
-      - "Can you get [PERSON] a [ITEM]"
-      - "Can you get [PERSON] [ITEM]"
-      - "Please give [PERSON] a [ITEM]"
-      - "Can you please get [PERSON] a [ITEM]"
-      - "Can you get [PERSON] some [ITEM]"
-      - "Can [PERSON] have a [ITEM]"
-
-    book:
-      - "Book a table for 3 at [PLACE] tonight"
+    send_sms:
+      - "{SEND_PREFIX} a text message to [CONTACT]"
+      - "{SEND_PREFIX} a sms to [CONTACT]"
+      - "{SEND_PREFIX} [CONTACT] a message"
