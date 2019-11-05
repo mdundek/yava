@@ -445,6 +445,31 @@ You do not need to configure this one, it should work as intended out of the box
 
 
 
+
+## Start PVA
+
+> IMPORTANT: Make sure you configured the various components according to the above section, and train your NLU model before you start the solution.
+
+To run the voice assistant, simply execute the following command from the repository root directory:
+
+```shell
+COMPOSE_HTTP_TIMEOUT=300 docker-compose up -d
+```
+
+To see the broker logs once started (ex. for debugging):
+
+```shell
+docker-compose logs -f
+```
+
+To stop the assistant:
+
+```shell
+docker-compose down
+```
+
+
+
 <!-- ## Usage
 
 ### NLU
