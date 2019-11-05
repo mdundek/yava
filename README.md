@@ -251,7 +251,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 ##### Configure Google STT
 
 Google has the best performance and accuracy of the three solutions, but it is not free to use once you passed the 60 min / month barrier.  
-You will first have to create a Google Cloud Service Account Key, and download the json file. For more information, please refer to the google documentation (here)[https://cloud.google.com/speech-to-text/docs/reference/libraries]. Also, donrt forget to enable the Google Cloud Speech API in your GCP console.  
+You will first have to create a Google Cloud Service Account Key, and download the json file. For more information, please refer to the google documentation [here](https://cloud.google.com/speech-to-text/docs/reference/libraries). Also, donrt forget to enable the Google Cloud Speech API in your GCP console.  
 Once you have the JSON key file, place it under the folder `resources/google/`, and rename it `credentials.json`.
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Google STT__:
@@ -298,7 +298,7 @@ To see how you can use the secondary STT engine, refer to the section How to use
 
 At the moment, I created two different NLU processing images:
 
-- __NLU light__: this is a lightweight NLU engine that I based on a NPM module called node-nlp. It uses the levenshtein distance algorythms to determine intent classification, which is the best option in cases you do not have huge amounts of training data. It also has a small CPU / memory footprint and is ideal for devices such as the Raspberry Pi. Named Entity Resolution (NER) is the more difficult part of NLP, and requires alot of available memory if you wish to do this using Deep Learning based aproaches. node-nlp uses the __enumeration__ based Named Entities configuration, which is not capable of identifying entities that are not part of the training set.
+- __NLU light__: this is a lightweight NLU engine that I based on a NPM module called node-nlp. It uses the levenshtein distance algorythms to determine intent classification, which is the best option when you do not have huge amounts of training data. It also has a small CPU / memory footprint and is ideal for devices such as the Raspberry Pi. Named Entity Resolution (NER) is the more difficult part of NLP, and requires alot of available memory if you wish to do this using Deep Learning based aproaches. node-nlp uses the __enumeration__ based Named Entities configuration, which is not capable of identifying entities that are not part of the training set.
 - __NLU Spacy__: This NLP¨engine is similar to the one above, but uses Spacy for Named Entity Resolution. This will hardly run on a Raspberry Pi 2/3, but it might be a good option for a Raspberry Pi 4 with at least 2GB of memory (to be tested). The advantage here is that Spacy, once trained, can recognize entities that did not necessarily apear in your training data, making it a more resilient solution for broader use cases.
 
 Choose one of the two as your main NLP engine, and configure it. 
@@ -312,6 +312,8 @@ __placeholders__: Can be used to generate training sets with placeholders. Rathe
 __entities__: Just like placeholders, but for Entities you would like to detect in your text.
 
 __intents__: List your intents here, and provide samples utterances that a user might ask. Tag the Entities in those utterances to train the engine so that it can recognize them.
+
+---
 
 To train your model, you will have to use a the appropriate docker image. Please read on for more details.
 
