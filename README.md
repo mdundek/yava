@@ -207,7 +207,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 
 ```yaml
   pva-stt:
-    image: pva-stt-pocketsphinx:0.9-arm
+    image: md76/pva-stt-pocketsphinx:0.9-arm
     restart: always
     container_name: pva-stt
     environment:
@@ -237,7 +237,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 
 ```yaml
   pva-stt:
-    image: pva-stt-wit:0.9-arm
+    image: md76/pva-stt-wit:0.9-arm
     restart: always
     container_name: pva-stt
     volumes:
@@ -258,7 +258,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 
 ```yaml
 pva-stt:
-    image: pva-stt-google:0.9-arm
+    image: md76/pva-stt-google:0.9-arm
     restart: always
     container_name: pva-stt
     volumes:
@@ -321,7 +321,7 @@ To train your model, you will have to use a the appropriate docker image. Please
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
-```
+```shell
 docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-light:0.9-arm python train.py
 ```
 
@@ -333,16 +333,65 @@ Once the training is done, you will see a new file in the folder `resources/nlu/
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
-```
-docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-spacy:0.9-arm python train.py
+```shell
+docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-spacy:0.9-en-sm-arm python train.py
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part fith the name of your training yaml file.
 Once the training is done, you will see a new files in the folder `resources/nlu/models/intents/`, as well as spacy entity models in the folder `resources/nlu/models/entities/`.
 
 > WARNING: Spacy takes a long time to train your model, especially on a Raspberry Pi 2/3. This might be a bit better on a Raspberry Pi 4 (again, to be tested).
-> You can also use a more powerfull machine to train your model, and move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/`.  
-> Do do so, use the docker image tag `0.9` rather than `0.9-arm`.
+> You can also use a more powerfull machine to train your model, and then move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/` accordingly.  
+> Do do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
+
+##### Configure NLU Light
+
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Light__:
+
+```yaml
+  pva-nlu:
+    image: md76/pva-nlu-light:0.9-arm
+    restart: always
+    container_name: pva-nlu
+    networks:
+      - pva-network
+    volumes:
+      - ./resources/nlu/models:/usr/src/app/models
+      - ./resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml
+    environment:
+      - LANGUAGE=en
+    depends_on:
+      - pva-mosquitto
+```
+
+Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
+
+
+##### Configure NLU Spacy
+
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Spacy__:
+
+```yaml
+  pva-nlu:
+    image: md76/pva-nlu-spacy:0.9-en-sm-arm
+    restart: always
+    container_name: pva-nlu
+    networks:
+      - pva-network
+    volumes:
+      - ./resources/nlu/models:/usr/src/app/models
+    depends_on:
+      - pva-mosquitto
+```
+
+Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.  
+
+> If you pay attention to the image tag used here, you will notice that we are using the tag `0.9-en-sm-arm`. This tag means that this image was build with the Spacy English model called `en_core_web_sm`, based on the ARM architecture. I will make other images available with larger base models such as `en_core_web_md` for better entity recognition, as well as Intel / AMD based architectures for training on different machines.
+
+
+
+
+
 
 <!-- ## Usage
 
