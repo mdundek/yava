@@ -21,7 +21,7 @@ The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry
 		* [Configure Google STT](#googlestt)  
 		* [Configure a second STT container (optional)](#secondarystt)  
 	* [NLU](#nlu)  
-		* [Configure NLU (Light & Spacy)](#confignlu)  
+		* [Prepare your training data](#confignlu)  
 		* [Train model for NLU Light](#nlulighttrain)  
 		* [Train model for NLU Spacy](#nluspacytrain)  
 		* [Configure NLU Light](#nlulight)  
@@ -336,7 +336,7 @@ At the moment, I created two different NLU processing images:
 
 Choose one of the two as your main NLP engine, and configure it. 
 
-#### Configure NLU (Light & Spacy)<a name="confignlu"></a>
+#### Prepare your training data<a name="confignlu"></a>
 
 First, you need to create your NLU training data. There is a sample training data file that you can get inspiration from here: `resources/nlu/training_data/training_example.yaml`.
 
