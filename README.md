@@ -8,6 +8,20 @@ The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry
 * [Some of the key features](#keyfeatures)  
 * [Installation](#install)  
 	* [Prerequisit](#prereq)  
+	* [Install the Private Voice Assistant](#install_pva)  
+* [Configuration & Setup](#configure)   
+	* [Prerequisit](#prereq)
+	* [Prerequisit](#prereq)  
+	* [Prerequisit](#prereq)  
+	* [Prerequisit](#prereq)  	
+	* [Prerequisit](#prereq)  	
+	* [Prerequisit](#prereq)  	
+	* [Prerequisit](#prereq)  
+	* [Prerequisit](#prereq)  	
+	* [Prerequisit](#prereq)  
+
+
+
 
 ## Why another voice assistant?<a name="introduction"></a>
 
@@ -89,7 +103,7 @@ For docker-compose, we will use `pip` to install it on our Raspberry Pi. Therefo
 sudo apt-get -y install python-setuptools && sudo easy_install pip && sudo pip install docker-compose
 ```
 
-### Install the Private Voice Assistant
+### Install the Private Voice Assistant<a name="install_pva"></a>
 
 Clone the repository to your Raspberry Pi:
 
@@ -97,7 +111,7 @@ Clone the repository to your Raspberry Pi:
 git clone https://github.com/mdundek/private-voice-assistant.git
 ```
 
-## Setup
+## Configuration & Setup<a name="configure"></a>
 
 <!-- Start by applying permissions to all shared folders and files used by docker compose
 
@@ -105,8 +119,6 @@ git clone https://github.com/mdundek/private-voice-assistant.git
 find ./files -type d -exec sudo chmod 755 {} \;
 find ./files -type f -exec sudo chmod 755 {} \;
 ``` -->
-
-### PVA components
 
 The assistant uses docker-compose, and requires the following containers to function:
 
@@ -128,7 +140,7 @@ All configuration files are to be placed under the `resources`folder of this rep
 In some cases, you will also have to configure the `docker-compose` __yaml__ file, I will document those parts for each docker image available for the solution.  
 This file is called `docker-compose.yml`, and is situated at the root of this repository.
 
-#### 1. Hotword detector
+### 1. Hotword detector
 
 At the moment, I created two different hotword detector images:
 
@@ -137,7 +149,7 @@ At the moment, I created two different hotword detector images:
 
 Choose one of the two that you would like to use in your project, and configure it.
 
-##### Configure Snowboy
+#### Configure Snowboy
 
 Grab a model if you don't want to use the default one (Hey Alice). To do so, download a public hotword from the Snowboy website, or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
 Attention, only one hotword file is allowed the `resources/snowboy/models` folder. So if you download your own hotword file, please delete the default hotword file first.
@@ -164,7 +176,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 Replace the `<YOUR HOTWORD MODEL FILE>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
 
 
-##### Configure Porcupine
+#### Configure Porcupine
 
 By default, Porcupine comes with the following available hotwords out of the box:  
 
@@ -206,7 +218,7 @@ At the moment, I created three different speech to text images:
 
 Choose one of the three as your main TTS engine, and configure it. Optionally, you can set up a second STT engine that can be used on demand using the APIs.
 
-##### Configure Pocketsphinx STT
+#### Configure Pocketsphinx STT
 
 By default, I added an English US model that requires no configuration to be used.  
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Pocketsphinx STT__:
@@ -233,7 +245,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 To use a different language model, place it under the `resources/pocketsphinx/model` folder, and update the compose configuration block accordingly.
 
 
-##### Configure WIT STT
+#### Configure WIT STT
 
 WIT is a free, cloud based voice assistant solution that also has STT APIs. This is a good compromise if you don't care about privacy, and would like something that is completely free no matter how much you use it (there are of course common sence limits imposed by WIT). The response time is not as good as what Google has to offer, but then again, it's free!  
 
@@ -255,7 +267,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
       - pva-mosquitto
 ```
 
-##### Configure Google STT
+#### Configure Google STT
 
 Google has the best performance and accuracy of the three solutions, but it is not free to use once you passed the 60 min / month barrier.  
 You will first have to create a Google Cloud Service Account Key, and download the json file. For more information, please refer to the google documentation [here](https://cloud.google.com/speech-to-text/docs/reference/libraries). Also, donrt forget to enable the Google Cloud Speech API in your GCP console.  
@@ -276,7 +288,7 @@ pva-stt:
       - pva-mosquitto
 ```
 
-#### OPTIONAL: Configure a second STT container
+### OPTIONAL: Configure a second STT container
 
 If you want to use two speech to text engines in your solution, one to run offline on the device for privacy for example, and one for accurate transcription on the cloud for specific commands within your application flow, then read on.  
 
@@ -310,7 +322,7 @@ At the moment, I created two different NLU processing images:
 
 Choose one of the two as your main NLP engine, and configure it. 
 
-##### Configure NLU (Light & Spacy)
+#### Configure NLU (Light & Spacy)
 
 First, you need to create your NLU training data. There is a sample training data file that you can get inspiration from here: `resources/nlu/training_data/training_example.yaml`.
 
@@ -354,7 +366,7 @@ __intents__: List your intents here, and provide samples utterances that a user 
 
 To train your model, you will have to use the appropriate docker image. Please read on for more details.
 
-##### Train model for NLU Light
+#### Train model for NLU Light
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
@@ -370,7 +382,7 @@ Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml
 Once the training is done, you will see a new file in the folder `resources/nlu/models/intents/model.nlp`.
 
 
-##### Train model for NLU Spacy
+#### Train model for NLU Spacy
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
@@ -389,7 +401,7 @@ Once the training is done, you will see a new files in the folder `resources/nlu
 > You can also use a more powerfull machine to train your model, and then move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/` accordingly.  
 > Do do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
 
-##### Configure NLU Light
+#### Configure NLU Light
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Light__:
 
@@ -412,7 +424,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
 
 
-##### Configure NLU Spacy
+#### Configure NLU Spacy
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Spacy__:
 
