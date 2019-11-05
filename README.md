@@ -2,7 +2,14 @@
 
 The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry Pi 2/3. I have not tested it on a Raspberry Pi 4 or Zero, so if you do test it on those platforms, please let me know how it goes. 
 
-## Why another voice assistant?
+## Table of contents
+
+1. [Why another voice assistant](#introduction)
+2. [Some of the key features](#keyfeatures)
+3. [Installation](#install)
+  1. [Prerequisit](#prereq)
+
+## Why another voice assistant?<a name="introduction"></a>
 
 There are plenty of voice assistants out there, even a couple of completely open source once. The work they have done is great and some of them where a source of inspiration for this project.  
 
@@ -12,7 +19,7 @@ Let's say you are building a robot that for some reason decides to interact with
 
 You see, there are alot of situations where you need flexibility of the solution in order to achieve certain goals, and that's what this project is focusing on.    
 
-## Some of the key features
+## Some of the key features<a name="keyfeatures"></a>
 
 - Plug & play composable architecture, flexible and extensible
 - More control over the voice assistant toolset workflow
@@ -21,9 +28,9 @@ You see, there are alot of situations where you need flexibility of the solution
 - Possibility to hyjack and control the assistant from your application, rather than from a hotword
 - Possibility to use 2 separate speech to text engines for customized workflows
 
-## Install
+## Installation<a name="install"></a>
 
-### Prerequisit
+### Prerequisit<a name="prereq"></a>
 
 Start from a clean Raspbian stretch light installation, enable SSH and connect the device to the internet. This part is out of scope for this README, please refer to the Raspberry Pi website for more details. 
 
@@ -595,115 +602,3 @@ if(voiceAssistant.connected){
 
 
 ### Python
-
-<!-- ## Usage
-
-### NLU
-
-First, configure your NLU training data located at `files/nlu/training_data/train.yaml`. This consists of specifying your sample utterances for intent recognition and entity definitions.  
-Depending on your needs, you can use the `nlu-light` docker image if running on a low powered device such as the raspberry pi, or the `nlu-spacy` docker image for more ambitious NLU needs. The main difference is that `nlu-spacy` will be able to recognize entities that you have not trained for specifically, making it a more robust and flexible solution.  
-
-`nlu-spacy` requires at least 2GB of memory, and a fast CPU is recommended for training. You can train your model on a more powerfull machine, transfer the model over to the target device and use it there if you like.
-
-__Here is an example of a training set:__
-
-```yaml
-training:
-
-  placeholders:
-    health_states:
-      - healthy
-      - unhealthy
-      - good for me
-      - bad for me
-      - good for you
-      - bad for you
-    question_sets:
-      - Do you have
-      - Are there
-      - I am looking for
-
-  entities:
-    FOOD:
-      - bread
-      - candy
-      - olive oil
-      - potatos
-    FOOD(S):
-      - apples
-      - eggs
-      - snacks
-      - nutella sticks
-      - chocolat chip muffins
-
-  intents:
-
-    health:
-      - "Are those [FOOD(S)] {health_states}"
-      - "Is [FOOD] {health_states}"
-      - "Are [FOOD(S)] {health_states}"
-      - "Can you tell me if [FOOD(S)] are {health_states}"
-      - "Is it {health_states} to eat [FOOD(S)]"
-      - "Would you say that [FOOD] are {health_states}"
-      - "Would you recommend [FOOD(S)]"
-
-    availability:
-      - "{question_sets} [FOOD(S)]"
-      - "{question_sets} [FOOD(S)] available"
-      - "{question_sets} some [FOOD(S)] available"
-      - "{question_sets} [FOOD(S)] in stock"
-      - "{question_sets} some [FOOD(S)] in stock"
-      - "{question_sets} any [FOOD(S)] in stock"
-      - "{question_sets} any more [FOOD(S)] to sell"
-      - "{question_sets} [FOOD(S)], would you by any chance have some available"
-```
-
-#### Training your model
-
-Use docker to train your model, here is how.
-
-Execute the following command from the root of this repository:
-
-```
-docker run --rm \
-    -v $PWD/files/nlu/models:/usr/src/app/models \
-    -v $PWD/files/nlu/training_data/train.yaml:/usr/src/app/training_data/train.yaml \
-    pvi-nlu-light \
-    python train.py
-``` -->
-
-
-
-
-
-
-
-
-
-<!-- sudo docker tag cfcac9d99a05 md76/pva-orchestrator:0.9-arm
-sudo docker tag d308ea75362b md76/pva-tts-mimic:0.9-arm
-sudo docker tag e56239fe689f md76/pva-nlu-light:0.9-arm
-sudo docker tag de0f5549d4d3 md76/pva-stt-google:0.9-arm
-sudo docker tag 54746b8ee8b4 md76/pva-stt-wit:0.9-arm
-sudo docker tag 8dd81d03acb6 md76/pva-stt-pocketsphinx:0.9-arm
-sudo docker tag e33e199deca0 md76/pva-capture-speech:0.9-arm
-sudo docker tag 3b75324b0016 md76/pva-hotword-snowboy:0.9-arm
-sudo docker tag 345ff0fcc3d7 md76/pva-hotword-porcupine:0.9-arm
-
-sudo docker push md76/pva-orchestrator:0.9-arm
-sudo docker push md76/pva-tts-mimic:0.9-arm
-sudo docker push md76/pva-nlu-light:0.9-arm
-sudo docker push md76/pva-stt-google:0.9-arm
-sudo docker push md76/pva-stt-wit:0.9-arm
-sudo docker push md76/pva-stt-pocketsphinx:0.9-arm
-sudo docker push md76/pva-capture-speech:0.9-arm
-sudo docker push md76/pva-hotword-snowboy:0.9-arm
-sudo docker push md76/pva-hotword-porcupine:0.9-arm -->
-
-
-
-<!-- sudo docker tag e56239fe689f md76/pva-nlu-spacy:0.9-en-md -->
-<!-- sudo docker push md76/pva-nlu-spacy:0.9-en-md -->
-
-<!-- sudo docker tag e56239fe689f md76/pva-nlu-spacy:0.9-en-sm-arm -->
-<!-- sudo docker push md76/pva-nlu-spacy:0.9-en-sm-arm -->
