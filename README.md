@@ -609,7 +609,7 @@ If you want to initiate a new assistant session manually, you can do so using th
 
 ```node
 
-if(voiceAssistant.connected){
+if(PrivateVoiceAssistant.connected){
     try{
         let assistantSession = await PrivateVoiceAssistant.hijackSession();
         
