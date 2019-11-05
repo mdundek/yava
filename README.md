@@ -79,29 +79,58 @@ sudo usermod -aG docker pi
 For docker-compose, we will use `pip` to install it on our Raspberry Pi. Therefore we need to install it first, and then install docker-compose:
 
 ```shell
-# sudo apt install -y python python-pip libffi-dev libssl-dev python-backports.ssl-match-hostname && sudo pip install docker-compose
 sudo apt-get -y install python-setuptools && sudo easy_install pip && sudo pip install docker-compose
 ```
 
-### Install Private Voice Assistant
+### Install the Private Voice Assistant
 
 Clone the repository to your Raspberry Pi:
 
 ```shell
-git clone ...
+git clone https://github.com/mdundek/private-voice-assistant.git
 ```
-
-
-
 
 ## Setup
 
-Start by applying permissions to all shared folders and files used by docker compose
+<!-- Start by applying permissions to all shared folders and files used by docker compose
 
 ```shell
 find ./files -type d -exec sudo chmod 755 {} \;
 find ./files -type f -exec sudo chmod 755 {} \;
-```
+``` -->
+
+### PVA components
+
+The assistant uses docker-compose, and requires the following containers to function:
+
+- __Hotword detector__: Trigger on hotword detected by the user
+- __Speech capture__: Capture the spocken voice command from the user over the microphone
+- __Speech to text__: Transcribe the spocken voice into machine readable text
+- __NLU__: Naturtal Language Understanding for intent classification and named entity extraction
+- __Text to speech__: Convert text into voice and play it back over the speaker
+- __Ortchestrator__: The heart of the solution, that orchestrates all other components
+
+Before you can go ahead and start up the assistant, you will have to prepare and set up some configuration files. 
+
+### Prepare your configuration files
+
+All configuration files are to be placed under the `resources`folder of this repository, according to the specific container.
+
+#### Hotword detector
+
+At the moment, I created two different hotword detector images:
+
+- __Snowboy__: Well known hotword detector framework
+- __Porcupine__: A more recent hotword detector that shows promise
+
+Choose one of the two that you would like to use in your project.
+
+##### Snowboy: grab a model if you don't want to use the default one
+
+You will have to grab a public hotword from the Snowboy website, or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
+Attention, only one hotword file is allowed the `resources/snowboy/models` folder. So if you download your own hotword file, please delete the default hotword file first.
+
+> IMPORTANT: If you are planning to commercialize your solution, you will need to get a license from the Snowboy team.
 
 ## Usage
 
