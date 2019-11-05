@@ -315,7 +315,7 @@ __intents__: List your intents here, and provide samples utterances that a user 
 
 ---
 
-To train your model, you will have to use a the appropriate docker image. Please read on for more details.
+To train your model, you will have to use the appropriate docker image. Please read on for more details.
 
 ##### Train model for NLU Light
 
@@ -325,7 +325,7 @@ Once you have finished your training set definitions, run the following command 
 docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-light:0.9-arm python train.py
 ```
 
-Replace the `<YOUR TRAINING YAML FILE>` part fith the name of your training yaml file.
+Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
 Once the training is done, you will see a new file in the folder `resources/nlu/models/intents/model.nlp`.
 
 
@@ -337,7 +337,7 @@ Once you have finished your training set definitions, run the following command 
 docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-spacy:0.9-en-sm-arm python train.py
 ```
 
-Replace the `<YOUR TRAINING YAML FILE>` part fith the name of your training yaml file.
+Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
 Once the training is done, you will see a new files in the folder `resources/nlu/models/intents/`, as well as spacy entity models in the folder `resources/nlu/models/entities/`.
 
 > WARNING: Spacy takes a long time to train your model, especially on a Raspberry Pi 2/3. This might be a bit better on a Raspberry Pi 4 (again, to be tested).
@@ -389,7 +389,21 @@ Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml
 > If you pay attention to the image tag used here, you will notice that we are using the tag `0.9-en-sm-arm`. This tag means that this image was build with the Spacy English model called `en_core_web_sm`, based on the ARM architecture. I will make other images available with larger base models such as `en_core_web_md` for better entity recognition, as well as Intel / AMD based architectures for training on different machines.
 
 
+### 5. Text to speech
 
+At the moment, I only implemented one TTS engine that is based on Microft Mimic1 engine. It is the best open source TTS engine I have seen that works offline, but unfortunately it only supports English.  
+I will implement two more TTS engines in the comming weeks, one based on ESpeak for multi-language offline support, and one based on Google Cloud TTS for high quality voice.  
+
+You do not need to configure this one, it should work as intended out of the box
+
+### 6. Ortchestrator
+
+You do not need to configure this one, it should work as intended out of the box
+
+
+### 7. MQTT broker
+
+You do not need to configure this one, it should work as intended out of the box
 
 
 
