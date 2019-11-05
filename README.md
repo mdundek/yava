@@ -486,18 +486,74 @@ let voiceAssistant = new PrivateVoiceAssistant("<IP OF HOST THAT RUNS PVA>");
 Register to PVA events:
 
 ```node
+/**
+ * When client connects successfully to the PVA instance
+ */
 voiceAssistant.onConnect(() => {
 
 });
 
+/**
+ * When client is disconnected from the PVA instance
+ */
 voiceAssistant.onDisconnect(() => {
     
 });
 
+/**
+ * Callback triggered when PVA NLU recognizes an intent.
+ * 
+ * Parameter "assistantSession": The assistant session object 
+ * that can be used to interact with PVA
+ */
 voiceAssistant.onInitialIntent((assistantSession) => {
+    (async() => {
+      try{
+          switch(assistantSession.data.intent){
+              case "send_email":
+                  // Ask user to who this email should be send
+                  await assistantSession.speekOut("To whom would you like to send this email to exactly");
 
+                  // Get user response, without having NLU determine an intent
+                  let targetPersonResponse = await assistantSession.listenAndTranscribe();
+
+                  // Do whatever you need to do with the user response text, 
+                  // in this case probably look up the user email address
+                  let contact = ...
+
+                  if(!contact){
+                      await assistantSession.speekOut("I don't know that person, sorry");
+                  } 
+                  else {
+                      await assistantSession.speekOut("What do you want your message to say");
+
+                      // Itterate and ask user to dictate what he would like to send, until the user says "done"
+                      let totalMessage = "";
+                      while(true){
+                          let emailMessage = await assistantSession.listenAndTranscribe();
+                          if(emailMessage == "done"){
+                              break;
+                          } else{
+                              totalMessage += "\n" + emailMessage
+                              await assistantSession.speekOut("Anything else you wanna say? Say done when you are done");
+                          }
+                      }
+
+                      // Send the email to the target user...
+                  }
+                  break
+          }
+      } catch(err){
+          console.log("ERROR => ", err);            
+      } finally{
+          // Release the assistant session
+          assistantSession.done();
+      }
+    })();
 });
 ```
+
+
 
 ### Python
 
