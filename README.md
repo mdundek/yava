@@ -307,9 +307,39 @@ Choose one of the two as your main NLP engine, and configure it.
 
 First, you need to create your NLU training data. There is a sample training data file that you can get inspiration from here: `resources/nlu/training_data/training_example.yaml`.
 
-__placeholders__: Can be used to generate training sets with placeholders. Rather than creating one example utterance for each variant of a sentance sub section, list those variants in a named placeholder node and reference it in your training utterance. 
+Example `training.yaml` file:
 
-__entities__: Just like placeholders, but for Entities you would like to detect in your text.
+```yaml
+training:
+
+  placeholders:
+    SEND_PREFIX:
+      - Send
+      - Can you send
+      - Please send
+
+  entities:
+    CONTACT:
+      - Michael
+      - Becky
+      - Mom
+      - Pascal
+
+  intents:
+
+    send_email:
+      - "{SEND_PREFIX} an email to [CONTACT]"
+      - "{SEND_PREFIX} [CONTACT] an email"
+
+    send_sms:
+      - "{SEND_PREFIX} a text message to [CONTACT]"
+      - "{SEND_PREFIX} a sms to [CONTACT]"
+      - "{SEND_PREFIX} [CONTACT] a message"
+```
+
+__placeholders__: Can be used to generate training sets with placeholders. Rather than creating one example utterance for each variant of a sentance sub section, list those variants in a named placeholder node and reference it in your training utterance. Placeholders are injected by using `{...}` syntax.
+
+__entities__: Just like placeholders, but for Entities you would like to detect in your text. Entities are injected by using `[...]` syntax.
 
 __intents__: List your intents here, and provide samples utterances that a user might ask. Tag the Entities in those utterances to train the engine so that it can recognize them.
 
