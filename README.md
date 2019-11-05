@@ -109,6 +109,8 @@ The assistant uses docker-compose, and requires the following containers to func
 - __4. NLU__: Naturtal Language Understanding for intent classification and named entity extraction
 - __5. Text to speech__: Convert text into voice and play it back over the speaker
 - __6. Ortchestrator__: The heart of the solution, that orchestrates all other components
+- __7. MQTT broker__: The Mosquitto message bus used for component communication
+
 
 Before you can go ahead and start up the assistant, you will have to prepare and set up some configuration files first. 
 
@@ -147,12 +149,12 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     networks:
       - pva-network
     volumes:
-      - ./resources/snowboy/models/<your hotword model file name>:/usr/src/app/models/Hotword.pmdl
+      - ./resources/snowboy/models/<YOUR HOTWORD MODEL FILE>:/usr/src/app/models/Hotword.pmdl
     depends_on:
       - pva-mosquitto
 ```
 
-Replace the `<your hotword model file name>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
+Replace the `<YOUR HOTWORD MODEL FILE>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
 
 
 ##### Configure Porcupine
@@ -178,27 +180,121 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
       - pva-mosquitto
 ```
 
-Please update the environement variable `SYSTEM_HOTWORDS` according to your needs, based on the available public hotwords listed above.   
+Update the environement variable `SYSTEM_HOTWORDS` according to your needs, based on the available public hotwords listed above.   
 
 > At the time being, custom hotwords with Porcupine are not possible. If someone has purchased a custom hotword from them, and would like to use it, please contact me and I will update the image and documentation accordingly 
 
+### 2. Speech capture
+
+You do not need to configure this one, it should work as intended out of the box
 
 
+### 3. Speech to text
+
+At the moment, I created three different speech to text images:
+
+- __Pocketsphinx__: A fully offline based STT engine, running on small footprint devices such as the Raspberry Pi. Medium accuracy, but good enougth for simple intent classification. You can also use custom models if you like, in case you trained your own custom domain model, or if you wish to use different languages than English
+- __WIT__: A free, cloud based STT engine, good accuracy
+- __Google Cloud__: The best accuracy, you get 60 minutes free every month, past that the service will cost you 
+
+Choose one of the three as your main TTS engine, and configure it. Optionally, you can set up a second STT engine that can be used on demand using the APIs.
+
+##### Configure Pocketsphinx STT
+
+By default, I added an English US model that requires no configuration to be used.  
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Pocketsphinx STT__:
 
 
+```yaml
+  pva-stt:
+    image: pva-stt-pocketsphinx:0.9-arm
+    restart: always
+    container_name: pva-stt
+    environment:
+      - PSX_LANGUAGE_PATH=model/en-us
+      - PSX_HMM_PATH=model/en-us/en-us
+      - PSX_LM_FILE=model/en-us/en-us.lm.bin
+      - PSX_DICT_FILE=model/en-us/cmudict-en-us.dict
+    volumes:
+      - ./resources/pocketsphinx/model:/usr/src/app/model
+    networks:
+      - pva-network
+    depends_on:
+      - pva-mosquitto
+```
+
+To use a different language model, place it under the `resources/pocketsphinx/model` folder, and update the compose configuration block accordingly.
 
 
+##### Configure WIT STT
 
+WIT is a free, cloud based voice assistant solution that also has STT APIs. This is a good compromise if you don't care about privacy, and would like something that is completely free no matter how much you use it (there are of course common sence limits imposed by WIT). The response time is not as good as what Google has to offer, but then again, it's free!  
 
+You have to create an account on the WIT website first, and generate an API key. You can set your language in your WIT web console, under your WIT application directly. This language will be bound to your API key.  
+Once you have your API key, paste it in a file named `key.txt`, in the folder `resources/wit/`
 
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __WIT STT__:
 
+```yaml
+  pva-stt:
+    image: pva-stt-wit:0.9-arm
+    restart: always
+    container_name: pva-stt
+    volumes:
+      - ./resources/wit/key.txt:/usr/src/app/key.txt
+    networks:
+      - pva-network
+    depends_on:
+      - pva-mosquitto
+```
 
+##### Configure Google STT
 
+Google has the best performance and accuracy of the three solutions, but it is not free to use once you passed the 60 min / month barrier.  
+You will first have to create a Google Cloud Service Account Key, and download the json file. For more information, please refer to the google documentation (here)[https://cloud.google.com/speech-to-text/docs/reference/libraries]. Also, donrt forget to enable the Google Cloud Speech API in your GCP console.  
+Once you have the JSON key file, place it under the folder `resources/google/`, and rename it `credentials.json`.
 
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Google STT__:
 
+```yaml
+pva-stt:
+    image: pva-stt-google:0.9-arm
+    restart: always
+    container_name: pva-stt
+    volumes:
+      - ./resources/google/credentials.json:/usr/src/app/credentials.json
+    networks:
+      - pva-network
+    depends_on:
+      - pva-mosquitto
+```
 
+#### OPTIONAL: Configure a second STT container
 
-## Usage
+If you want to use two speech to text engines in your solution, one to run offline on the device for privacy for example, and one for accurate transcription on the cloud for specific commands within your application flow, then read on.  
+
+In the `docker-compose.yml` config file, locate and uncomment the block that you want to use for your secondary __*** STT__ engine, and modify it like in the example below:
+
+```yaml
+pvi-stt-alt:
+    image: pvi-stt-google:0.9-arm
+    restart: always
+    container_name: pvi-stt-alt
+    environment:
+      - STT_ALT=1
+    volumes:
+      - ./resources/google/credentials.json:/usr/src/app/credentials.json
+    networks:
+      - pvi-network
+    depends_on:
+      - pvi-mosquitto
+```
+
+Note the `-alt` part appended to the block name as well as to the container name, and the extra environement variable set as `STT_ALT=1`. Those modifications apply to any of the three STT engines available.  
+ 
+To see how you can use the secondary STT engine, refer to the section How to use the PVA client API.
+
+<!-- ## Usage
 
 ### WIT speech to text
 
@@ -277,7 +373,7 @@ docker run --rm \
     -v $PWD/files/nlu/training_data/train.yaml:/usr/src/app/training_data/train.yaml \
     pvi-nlu-light \
     python train.py
-```
+``` -->
 
 
 
@@ -287,9 +383,8 @@ docker run --rm \
 
 
 
-sudo docker tag cfcac9d99a05 md76/pva-orchestrator:0.9-arm
+<!-- sudo docker tag cfcac9d99a05 md76/pva-orchestrator:0.9-arm
 sudo docker tag d308ea75362b md76/pva-tts-mimic:0.9-arm
-<!-- sudo docker tag e56239fe689f md76/pva-nlu-spacy:0.9-en-sm-arm -->
 sudo docker tag e56239fe689f md76/pva-nlu-light:0.9-arm
 sudo docker tag de0f5549d4d3 md76/pva-stt-google:0.9-arm
 sudo docker tag 54746b8ee8b4 md76/pva-stt-wit:0.9-arm
@@ -300,16 +395,18 @@ sudo docker tag 345ff0fcc3d7 md76/pva-hotword-porcupine:0.9-arm
 
 sudo docker push md76/pva-orchestrator:0.9-arm
 sudo docker push md76/pva-tts-mimic:0.9-arm
-<!-- sudo docker push md76/pva-nlu-spacy:0.9-en-sm-arm -->
 sudo docker push md76/pva-nlu-light:0.9-arm
 sudo docker push md76/pva-stt-google:0.9-arm
 sudo docker push md76/pva-stt-wit:0.9-arm
 sudo docker push md76/pva-stt-pocketsphinx:0.9-arm
 sudo docker push md76/pva-capture-speech:0.9-arm
 sudo docker push md76/pva-hotword-snowboy:0.9-arm
-sudo docker push md76/pva-hotword-porcupine:0.9-arm
+sudo docker push md76/pva-hotword-porcupine:0.9-arm -->
 
 
 
 <!-- sudo docker tag e56239fe689f md76/pva-nlu-spacy:0.9-en-md -->
 <!-- sudo docker push md76/pva-nlu-spacy:0.9-en-md -->
+
+<!-- sudo docker tag e56239fe689f md76/pva-nlu-spacy:0.9-en-sm-arm -->
+<!-- sudo docker push md76/pva-nlu-spacy:0.9-en-sm-arm -->
