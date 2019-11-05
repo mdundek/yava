@@ -571,7 +571,7 @@ let text = await assistantSession.listenAndTranscribe(opt)
 assistantSession.speekOut(text)
 ```
 
-If you want to start a new assistant session, you can do so using the `hijackSession` function of the `voiceAssistant` instance:
+If you want to initiate a new assistant session manually, you can do so using the `hijackSession` function of the `voiceAssistant` instance:
 
 ```node
 
@@ -590,6 +590,8 @@ if(voiceAssistant.connected){
     }
 }
 ```
+
+> IMPORTANT: PVA is not designed to be multi tenant. Do not try to creatye multiple instances of the `PrivateVoiceAssistant`object, or to interact in parallel with the `assistantSession` instance on a running session. Use the library syncroniously, one session at a time.
 
 
 ### Python
