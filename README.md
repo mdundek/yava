@@ -103,12 +103,12 @@ find ./files -type f -exec sudo chmod 755 {} \;
 
 The assistant uses docker-compose, and requires the following containers to function:
 
-- __Hotword detector__: Trigger on hotword detected by the user
-- __Speech capture__: Capture the spocken voice command from the user over the microphone
-- __Speech to text__: Transcribe the spocken voice into machine readable text
-- __NLU__: Naturtal Language Understanding for intent classification and named entity extraction
-- __Text to speech__: Convert text into voice and play it back over the speaker
-- __Ortchestrator__: The heart of the solution, that orchestrates all other components
+- __1. Hotword detector__: Trigger on hotword detected by the user
+- __2. Speech capture__: Capture the spocken voice command from the user over the microphone
+- __3. Speech to text__: Transcribe the spocken voice into machine readable text
+- __4. NLU__: Naturtal Language Understanding for intent classification and named entity extraction
+- __5. Text to speech__: Convert text into voice and play it back over the speaker
+- __6. Ortchestrator__: The heart of the solution, that orchestrates all other components
 
 Before you can go ahead and start up the assistant, you will have to prepare and set up some configuration files first. 
 
@@ -119,7 +119,7 @@ All configuration files are to be placed under the `resources`folder of this rep
 In some cases, you will also have to configure the `docker-compose` __yaml__ file, I will document those parts for each docker image available for the solution.  
 This file is called `docker-compose.yml`, and is situated at the root of this repository.
 
-#### Hotword detector
+#### 1. Hotword detector
 
 At the moment, I created two different hotword detector images:
 
@@ -137,7 +137,7 @@ Attention, only one hotword file is allowed the `resources/snowboy/models` folde
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Snowboy__:  
 
-```
+```yaml
   pva-hotword:
     image: md76/pva-hotword-snowboy:0.9-arm
     restart: always
@@ -163,7 +163,7 @@ By default, Porcupine comes with the following available hotwords out of the box
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __porcupine__:  
 
-```
+```yaml
   pva-hotword:
     image: md76/pva-hotword-porcupine:0.9-arm
     restart: always
