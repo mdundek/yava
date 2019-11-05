@@ -110,11 +110,14 @@ The assistant uses docker-compose, and requires the following containers to func
 - __Text to speech__: Convert text into voice and play it back over the speaker
 - __Ortchestrator__: The heart of the solution, that orchestrates all other components
 
-Before you can go ahead and start up the assistant, you will have to prepare and set up some configuration files. 
+Before you can go ahead and start up the assistant, you will have to prepare and set up some configuration files first. 
 
 ### Prepare your configuration files
 
-All configuration files are to be placed under the `resources`folder of this repository, according to the specific container.
+All configuration files are to be placed under the `resources`folder of this repository, according to the specific container.  
+
+In some cases, you will also have to configure the `docker-compose` __yaml__ file, I will document those parts for each docker image available for the solution.  
+This file is called `docker-compose.yml`, and is situated at the root of this repository.
 
 #### Hotword detector
 
@@ -123,14 +126,77 @@ At the moment, I created two different hotword detector images:
 - __Snowboy__: Well known hotword detector framework
 - __Porcupine__: A more recent hotword detector that shows promise
 
-Choose one of the two that you would like to use in your project.
+Choose one of the two that you would like to use in your project, and configure it.
 
-##### Snowboy: grab a model if you don't want to use the default one
+##### Configure Snowboy
 
-You will have to grab a public hotword from the Snowboy website, or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
+Grab a model if you don't want to use the default one (Hey Alice). To do so, download a public hotword from the Snowboy website, or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
 Attention, only one hotword file is allowed the `resources/snowboy/models` folder. So if you download your own hotword file, please delete the default hotword file first.
 
 > IMPORTANT: If you are planning to commercialize your solution, you will need to get a license from the Snowboy team.
+
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Snowboy__:  
+
+```
+  pva-hotword:
+    image: md76/pva-hotword-snowboy:0.9-arm
+    restart: always
+    container_name: pva-hotword
+    devices:
+      - /dev/snd:/dev/snd
+    networks:
+      - pva-network
+    volumes:
+      - ./resources/snowboy/models/<your hotword model file name>:/usr/src/app/models/Hotword.pmdl
+    depends_on:
+      - pva-mosquitto
+```
+
+Replace the `<your hotword model file name>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
+
+
+##### Configure Porcupine
+
+By default, Porcupine comes with the following available hotwords out of the box:  
+
+`americano`, `blueberry`, `bumblebee`, `grapefruit`, `grasshopper`, `hey pico`, `picovoice`, `porcupine`, `terminator`
+
+In the `docker-compose.yml` config file, locate and uncomment the block that is used for __porcupine__:  
+
+```
+  pva-hotword:
+    image: md76/pva-hotword-porcupine:0.9-arm
+    restart: always
+    container_name: pva-hotword
+    environment:
+      - SYSTEM_HOTWORDS=hey pico,grapefruit,grasshopper
+    devices:
+      - /dev/snd:/dev/snd
+    networks:
+      - pva-network
+    depends_on:
+      - pva-mosquitto
+```
+
+Please update the environement variable `SYSTEM_HOTWORDS` according to your needs, based on the available public hotwords listed above.   
+
+> At the time being, custom hotwords with Porcupine are not possible. If someone has purchased a custom hotword from them, and would like to use it, please contact me and I will update the image and documentation accordingly 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Usage
 
