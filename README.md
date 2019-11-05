@@ -511,7 +511,7 @@ voiceAssistant.onInitialIntent((assistantSession) => {
       try{
           switch(assistantSession.data.intent){
               case "send_email":
-                  // Ask user to who this email should be send
+                  // Ask user to who this email should be send to
                   await assistantSession.speekOut("To whom would you like to send this email to exactly");
 
                   // Get user response, without having NLU determine an intent
@@ -527,7 +527,8 @@ voiceAssistant.onInitialIntent((assistantSession) => {
                   else {
                       await assistantSession.speekOut("What do you want your message to say");
 
-                      // Itterate and ask user to dictate what he would like to send, until the user says "done"
+                      // Itterate and ask user to dictate what he would like to say, 
+                      // until the user says the word "done"
                       let totalMessage = "";
                       while(true){
                           let emailMessage = await assistantSession.listenAndTranscribe();
@@ -535,11 +536,11 @@ voiceAssistant.onInitialIntent((assistantSession) => {
                               break;
                           } else{
                               totalMessage += "\n" + emailMessage
-                              await assistantSession.speekOut("Anything else you wanna say? Say done when you are done");
+                              await assistantSession.speekOut("Anything else you wanna say? Say done when you are finished");
                           }
                       }
 
-                      // Send the email to the target user...
+                      // Now send the email to the target user...
                   }
                   break
           }
@@ -553,6 +554,39 @@ voiceAssistant.onInitialIntent((assistantSession) => {
 });
 ```
 
+Other methods for the __assistantSession__ object:
+
+```node
+let intentAndEntities = await assistantSession.listenAndMatchIntent(opt)
+// opt is optional, use it if you want to use the secondary TTS engine rather than the default one:
+// ex. {"stt_alt": true}
+
+let text = await assistantSession.listenAndTranscribe(opt)
+// opt is optional, use it if you want to use the secondary TTS engine rather than the default one:
+// ex. {"stt_alt": true}
+
+assistantSession.speekOut(text)
+```
+
+If you want to start a new assistant session, you can do so using the `hijackSession` function of the `voiceAssistant` instance:
+
+```node
+
+if(voiceAssistant.connected){
+    try{
+        let assistantSession = await voiceAssistant.hijackSession();
+        
+        await assistantSession.speekOut("I just started a session on my own");
+        
+        // Do whatever you want here with this session object...
+
+        // Dont forget to release the session when done
+        assistantSession.done();
+    } catch(err){
+        console.log("ERROR => ", err);            
+    }
+}
+```
 
 
 ### Python
