@@ -4,10 +4,10 @@ The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry
 
 ## Table of contents
 
-[Why another voice assistant](#introduction)  
-[Some of the key features](#keyfeatures)  
-[Installation](#install)  
-	1. [Prerequisit](#prereq)  
+* [Why another voice assistant](#introduction)  
+* [Some of the key features](#keyfeatures)  
+* [Installation](#install)  
+	* [Prerequisit](#prereq)  
 
 ## Why another voice assistant?<a name="introduction"></a>
 
