@@ -352,7 +352,11 @@ To train your model, you will have to use the appropriate docker image. Please r
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
 ```shell
-docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-light:0.9-arm python train.py
+docker run --rm \
+  -v $PWD/resources/nlu/models:/usr/src/app/models \
+  -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml \
+  md76/pva-nlu-light:0.9-arm \
+  python train.py
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
@@ -364,7 +368,11 @@ Once the training is done, you will see a new file in the folder `resources/nlu/
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
 ```shell
-docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-spacy:0.9-en-sm-arm python train.py
+docker run --rm \
+  -v $PWD/resources/nlu/models:/usr/src/app/models \
+  -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml \
+  md76/pva-nlu-spacy:0.9-en-sm-arm \
+  python train.py
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
@@ -438,11 +446,6 @@ You do not need to configure this one, it should work as intended out of the box
 
 
 <!-- ## Usage
-
-### WIT speech to text
-
-You can set your language in your WIT application directly. This language will be bound to your API key
-
 
 ### NLU
 
