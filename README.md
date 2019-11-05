@@ -508,12 +508,10 @@ docker-compose down
 For now, the client library is not available on NPM. this will change soon wonce I get the time to do so.  
 In the meanwhile, simply copy the folder `libraries/NodeJS/pva` to your NodeJS project.  
 
-To initiate the client, do the following:
+Require the client library and connect to the PVA host:
 
 ```node
 let PrivateVoiceAssistant = require("./pva/index");
-
-let voiceAssistant = new PrivateVoiceAssistant("<IP OF HOST THAT RUNS PVA>");
 ```
 
 Register to PVA events:
@@ -522,14 +520,14 @@ Register to PVA events:
 /**
  * When client connects successfully to the PVA instance
  */
-voiceAssistant.onConnect(() => {
+PrivateVoiceAssistant.onConnect(() => {
 
 });
 
 /**
  * When client is disconnected from the PVA instance
  */
-voiceAssistant.onDisconnect(() => {
+PrivateVoiceAssistant.onDisconnect(() => {
     
 });
 
@@ -539,7 +537,7 @@ voiceAssistant.onDisconnect(() => {
  * Parameter "assistantSession": The assistant session object 
  * that can be used to interact with PVA
  */
-voiceAssistant.onInitialIntent((assistantSession) => {
+PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
     (async() => {
       try{
           switch(assistantSession.data.intent){
@@ -585,6 +583,9 @@ voiceAssistant.onInitialIntent((assistantSession) => {
       }
     })();
 });
+
+// Now connect
+PrivateVoiceAssistant.connect("<IP OF HOST THAT RUNS PVA>");
 ```
 
 Other methods for the __assistantSession__ object:
@@ -610,7 +611,7 @@ If you want to initiate a new assistant session manually, you can do so using th
 
 if(voiceAssistant.connected){
     try{
-        let assistantSession = await voiceAssistant.hijackSession();
+        let assistantSession = await PrivateVoiceAssistant.hijackSession();
         
         await assistantSession.speekOut("I just started a session on my own");
         
@@ -624,7 +625,7 @@ if(voiceAssistant.connected){
 }
 ```
 
-> IMPORTANT: PVA is not designed to be multi tenant. Do not try to creatye multiple instances of the `PrivateVoiceAssistant`object, or to interact in parallel with the `assistantSession` instance on a running session. Use the library syncroniously, one session at a time.
+> IMPORTANT: PVA is not designed to be a multi tenant voice assistant. Use the library syncroniously, one session at a time.
 
 
 ### Python<a name="libpy"></a>

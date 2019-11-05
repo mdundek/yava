@@ -9,14 +9,11 @@ let _BORROWED_FLAG = false;
  */
 class PrivateVoiceAssistant {
 
-    constructor(host) {
+    static connect(host) {
         this.connected = false; 
         this.host = host;
         this.callback = {}
-        // this._apiRegisterId = shortid.generate();
-    }
 
-    connect() {
         this.client = mqtt.connect('mqtt://' + this.host);
 
         this.client.on('connect',  () => {
@@ -116,19 +113,19 @@ class PrivateVoiceAssistant {
         });
     }
 
-    onInitialIntent(cb) {
+    static onInitialIntent(cb) {
         this.callback.intentEventCallback = cb;
     }
 
-    onConnect(cb) {
+    static onConnect(cb) {
         this.callback.onConnect = cb;
     }
 
-    onDisconnect(cb) {
+    static onDisconnect(cb) {
         this.callback.onDisconnect = cb;
     }
 
-    hijackSession(){
+    static hijackSession(){
         return new Promise((res, rej) => {
             if(_BORROWED_FLAG) {
                 return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
