@@ -444,9 +444,7 @@ You do not need to configure this one, it should work as intended out of the box
 You do not need to configure this one, it should work as intended out of the box
 
 
-
-
-## Start PVA
+## Start the voice assistant
 
 > IMPORTANT: Make sure you configured the various components according to the above section, and train your NLU model before you start the solution.
 
@@ -455,6 +453,8 @@ To run the voice assistant, simply execute the following command from the reposi
 ```shell
 COMPOSE_HTTP_TIMEOUT=300 docker-compose up -d
 ```
+
+This will also restart the assistant automatically on reboot, untill you explicitly did a `docker-compose down`
 
 To see the broker logs once started (ex. for debugging):
 
@@ -468,7 +468,38 @@ To stop the assistant:
 docker-compose down
 ```
 
+## Use the client libraries
 
+### NodeJS
+
+For now, the client library is not available on NPM. this will change soon wonce I get the time to do so.  
+In the meanwhile, simply copy the folder `libraries/NodeJS/pva` to your NodeJS project.  
+
+To initiate the client, do the following:
+
+```node
+let PrivateVoiceAssistant = require("./pva/index");
+
+let voiceAssistant = new PrivateVoiceAssistant("<IP OF HOST THAT RUNS PVA>");
+```
+
+Register to PVA events:
+
+```node
+voiceAssistant.onConnect(() => {
+
+});
+
+voiceAssistant.onDisconnect(() => {
+    
+});
+
+voiceAssistant.onInitialIntent((assistantSession) => {
+
+});
+```
+
+### Python
 
 <!-- ## Usage
 
