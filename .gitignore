@@ -1,0 +1,6 @@
+resources/nlu/training_data/train.yaml
+**/node_modules
+**/.AppleDouble/
+.AppleDouble
+**/.DS_Store
+.DS_Store
