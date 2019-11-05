@@ -291,8 +291,56 @@ pvi-stt-alt:
 ```
 
 Note the `-alt` part appended to the block name as well as to the container name, and the extra environement variable set as `STT_ALT=1`. Those modifications apply to any of the three STT engines available.  
- 
+
 To see how you can use the secondary STT engine, refer to the section How to use the PVA client API.
+
+### 4. NLU
+
+At the moment, I created two different NLU processing images:
+
+- __NLU light__: this is a lightweight NLU engine that I based on a NPM module called node-nlp. It uses the levenshtein distance algorythms to determine intent classification, which is the best option in cases you do not have huge amounts of training data. It also has a small CPU / memory footprint and is ideal for devices such as the Raspberry Pi. Named Entity Resolution (NER) is the more difficult part of NLP, and requires alot of available memory if you wish to do this using Deep Learning based aproaches. node-nlp uses the __enumeration__ based Named Entities configuration, which is not capable of identifying entities that are not part of the training set.
+- __NLU Spacy__: This NLP¨engine is similar to the one above, but uses Spacy for Named Entity Resolution. This will hardly run on a Raspberry Pi 2/3, but it might be a good option for a Raspberry Pi 4 with at least 2GB of memory (to be tested). The advantage here is that Spacy, once trained, can recognize entities that did not necessarily apear in your training data, making it a more resilient solution for broader use cases.
+
+Choose one of the two as your main NLP engine, and configure it. 
+
+##### Configure NLU (Light & Spacy)
+
+First, you need to create your NLU training data. There is a sample training data file that you can get inspiration from here: `resources/nlu/training_data/training_example.yaml`.
+
+__placeholders__: Can be used to generate training sets with placeholders. Rather than creating one example utterance for each variant of a sentance sub section, list those variants in a named placeholder node and reference it in your training utterance. 
+
+__entities__: Just like placeholders, but for Entities you would like to detect in your text.
+
+__intents__: List your intents here, and provide samples utterances that a user might ask. Tag the Entities in those utterances to train the engine so that it can recognize them.
+
+To train your model, you will have to use a the appropriate docker image. Please read on for more details.
+
+##### Train model for NLU Light
+
+Once you have finished your training set definitions, run the following command from the root of this repository:  
+
+```
+docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-light:0.9-arm python train.py
+```
+
+Replace the `<YOUR TRAINING YAML FILE>` part fith the name of your training yaml file.
+Once the training is done, you will see a new file in the folder `resources/nlu/models/intents/model.nlp`.
+
+
+##### Train model for NLU Spacy
+
+Once you have finished your training set definitions, run the following command from the root of this repository:  
+
+```
+docker run --rm -v $PWD/resources/nlu/models:/usr/src/app/models -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml md76/pva-nlu-spacy:0.9-arm python train.py
+```
+
+Replace the `<YOUR TRAINING YAML FILE>` part fith the name of your training yaml file.
+Once the training is done, you will see a new files in the folder `resources/nlu/models/intents/`, as well as spacy entity models in the folder `resources/nlu/models/entities/`.
+
+> WARNING: Spacy takes a long time to train your model, especially on a Raspberry Pi 2/3. This might be a bit better on a Raspberry Pi 4 (again, to be tested).
+> You can also use a more powerfull machine to train your model, and move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/`.  
+> Do do so, use the docker image tag `0.9` rather than `0.9-arm`.
 
 <!-- ## Usage
 
