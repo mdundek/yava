@@ -1,5 +1,7 @@
 # Private Voice Assistant
 
+![Assistant header](header.png)
+
 The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry Pi 2/3. I have not tested it on a Raspberry Pi 4 or Zero, so if you do test it on those platforms, please let me know how it goes. 
 
 ## Table of contents
@@ -413,7 +415,7 @@ Once the training is done, you will see a new files in the folder `resources/nlu
 
 > WARNING: Spacy takes a long time to train your model, especially on a Raspberry Pi 2/3. This might be a bit better on a Raspberry Pi 4 (again, to be tested).
 > You can also use a more powerfull machine to train your model, and then move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/` accordingly.  
-> Do do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
+> To do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
 
 #### Configure NLU Light<a name="nlulight"></a>
 
