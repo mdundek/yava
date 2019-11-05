@@ -557,14 +557,17 @@ voiceAssistant.onInitialIntent((assistantSession) => {
 Other methods for the __assistantSession__ object:
 
 ```node
+// Listen to the user, and run NLU intent & entity recognition on the command
 let intentAndEntities = await assistantSession.listenAndMatchIntent(opt)
 // opt is optional, use it if you want to use the secondary TTS engine rather than the default one:
 // ex. {"stt_alt": true}
 
+// Listen to the user, and return the transcribed text as is without going through the NLU engine
 let text = await assistantSession.listenAndTranscribe(opt)
 // opt is optional, use it if you want to use the secondary TTS engine rather than the default one:
 // ex. {"stt_alt": true}
 
+// Speak out the desired text
 assistantSession.speekOut(text)
 ```
 
