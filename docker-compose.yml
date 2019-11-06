@@ -8,7 +8,7 @@ services:
 
   # ************************ MQTT **************************
   pva-mosquitto:
-    image: md76/pva-mosquitto:0.9-arm
+    image: md76/pva-mosquitto:${PVA_VERSION}-arm
     container_name: pva-mosquitto
     restart: always
     ports:
@@ -21,7 +21,7 @@ services:
   # ************************ ORCHESTRATOR **************************
 
   pva-orchestrator:
-    image: md76/pva-orchestrator:0.9-arm
+    image: md76/pva-orchestrator:${PVA_VERSION}-arm
     restart: always
     container_name: pva-orchestrator
     environment:
@@ -34,7 +34,7 @@ services:
   # ************************ TTS **************************
 
   pva-tts:
-    image: md76/pva-tts-mimic:0.9-arm
+    image: md76/pva-tts-mimic:${PVA_VERSION}-arm
     restart: always
     container_name: pva-tts
     devices:
@@ -47,7 +47,7 @@ services:
   # ************************ CAPTURE SPEECH **************************
 
   pva-capture-speech:
-    image: md76/pva-capture-speech:0.9-arm
+    image: md76/pva-capture-speech:${PVA_VERSION}-arm
     restart: always
     container_name: pva-capture-speech
     devices:
@@ -60,7 +60,7 @@ services:
   # ************************ HOTWORD **************************
     
   # pva-hotword:
-  #   image: md76/pva-hotword-snowboy:0.9-arm
+  #   image: md76/pva-hotword-snowboy:${PVA_VERSION}-arm
   #   restart: always
   #   container_name: pva-hotword
   #   devices:
@@ -73,7 +73,7 @@ services:
   #     - pva-mosquitto
 
   # pva-hotword:
-  #   image: md76/pva-hotword-porcupine:0.9-arm
+  #   image: md76/pva-hotword-porcupine:${PVA_VERSION}-arm
   #   restart: always
   #   container_name: pva-hotword
   #   environment:
@@ -88,7 +88,7 @@ services:
   # ************************ STT **************************
 
   # pva-stt:
-  #   image: md76/pva-stt-wit:0.9-arm
+  #   image: md76/pva-stt-wit:${PVA_VERSION}-arm
   #   restart: always
   #   container_name: pva-stt
   #   # environment:
@@ -101,7 +101,7 @@ services:
   #     - pva-mosquitto
 
   # pva-stt:
-  #   image: md76/pva-stt-pocketsphinx:0.9-arm
+  #   image: md76/pva-stt-pocketsphinx:${PVA_VERSION}-arm
   #   restart: always
   #   container_name: pva-stt
   #   environment:
@@ -118,7 +118,7 @@ services:
   #     - pva-mosquitto
 
   # pva-stt:
-  #   image: md76/pva-stt-google:0.9-arm
+  #   image: md76/pva-stt-google:${PVA_VERSION}-arm
   #   restart: always
   #   container_name: pva-stt
   #   # environment:
@@ -134,7 +134,7 @@ services:
   # ************************ NLU **************************
   
   # pva-nlu:
-  #   image: md76/pva-nlu-light:0.9-arm
+  #   image: md76/pva-nlu-light:${PVA_VERSION}-arm
   #   restart: always
   #   container_name: pva-nlu
   #   networks:
@@ -148,7 +148,7 @@ services:
   #     - pva-mosquitto
 
   # pva-nlu:
-  #   image: md76/pva-nlu-spacy:0.9-en-sm-arm
+  #   image: md76/pva-nlu-spacy:${PVA_VERSION}-en-sm-arm
   #   restart: always
   #   container_name: pva-nlu
   #   networks:
