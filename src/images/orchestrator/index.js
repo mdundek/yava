@@ -72,10 +72,12 @@ client.on('message', function (topic, message) {
     }
     else if (topic.indexOf("PASSIST/API/RELEASE_SESSION/") == 0) {
         let sessionId = topic.split("/").pop();
-        if(SESSIONS[sessionId].inactiveTimeout){
-            clearTimeout(SESSIONS[sessionId].inactiveTimeout);
+        if(SESSIONS[sessionId]){
+           if(SESSIONS[sessionId].inactiveTimeout){
+                clearTimeout(SESSIONS[sessionId].inactiveTimeout);
+            }
+            delete SESSIONS[sessionId];
         }
-        delete SESSIONS[sessionId];
         _BORROWED = false;
         client.publish("PASSIST/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     }
@@ -182,6 +184,9 @@ onSessionError = (sessionId, payload) => {
                 break;
             case "AUD_ERR":
                 errMessage = "There was a problem with the microphone.";
+                break;
+            case "AUD_TMO":
+                errMessage = "Could not understand the user speech imput.";
                 break;
             case "STT_AUD":
                 errMessage = "I could not understand you, please speek louder next time.";

@@ -8,12 +8,9 @@ let _BORROWED_FLAG = false;
  * PrivateVoiceAssistant
  */
 class PrivateVoiceAssistant {
-
     static connect(host) {
-        this.connected = false; 
         this.host = host;
-        this.callback = {}
-
+    
         this.client = mqtt.connect('mqtt://' + this.host);
 
         this.client.on('connect',  () => {
@@ -98,9 +95,17 @@ class PrivateVoiceAssistant {
             } else if (topic.indexOf("PASSIST/ERROR/") == 0) {
                 let sessionId = topic.split("/").pop();
                 if(API_SESSION_OBJECT && (sessionId == "NULL" || API_SESSION_OBJECT.sessionId == sessionId)){
-                    let _err = API_SESSION_OBJECT.err;
-                    API_SESSION_OBJECT = null;
-                    _err(JSON.parse(message.toString("UTF-8")));
+
+                    let errorObj = JSON.parse(message.toString("UTF-8"));
+                    if(errorObj.reason == "AUD_TMO" && (API_SESSION_OBJECT.action == "listenAndTranscribe" || API_SESSION_OBJECT.action == "listenAndMatchIntent")){
+                        let _next = API_SESSION_OBJECT.next;
+                        API_SESSION_OBJECT = null;
+                        _next(null);
+                    } else {
+                        let _err = API_SESSION_OBJECT.err;
+                        API_SESSION_OBJECT = null;
+                        _err(JSON.parse(message.toString("UTF-8")));
+                    }
                 }
             } else if (topic.indexOf("PASSIST/API/TIMEOUT/") == 0) {
                 let sessionId = topic.split("/").pop();
@@ -142,6 +147,11 @@ class PrivateVoiceAssistant {
         });
     }
 }
+
+PrivateVoiceAssistant.callback = {};
+PrivateVoiceAssistant.connected = false;
+PrivateVoiceAssistant.host = null;
+PrivateVoiceAssistant.client = null;
 
 module.exports = PrivateVoiceAssistant;
 
