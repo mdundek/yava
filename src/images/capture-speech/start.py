@@ -30,14 +30,14 @@ sample_rate = 16000
 
 r = sr.Recognizer()
 # r.dynamic_energy_threshold = True
-r.energy_threshold = 3000
+r.energy_threshold = 4000
 MQTT_CONNECTED = False
 
 def capture_speech(sessionId, payload):
     with sr.Microphone(sample_rate=sample_rate) as source:
         r.adjust_for_ambient_noise(source, duration=0.5)
         try:
-            logger.info("=============> UPDATED")
+            
             audio = r.listen(source, timeout=5, phrase_time_limit=20)
 
 
