@@ -29,8 +29,8 @@ logger.setLevel(logging.INFO)
 sample_rate = 16000
 
 r = sr.Recognizer()
-r.dynamic_energy_threshold = True
-
+# r.dynamic_energy_threshold = True
+r.energy_threshold = 800
 MQTT_CONNECTED = False
 
 def capture_speech(sessionId, payload):
