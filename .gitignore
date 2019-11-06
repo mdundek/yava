@@ -1,5 +1,6 @@
 resources/nlu/training_data/train.yaml
 src/images/build_publish.sh
+src/images/pull_latest.sh
 **/node_modules
 **/.AppleDouble/
 .AppleDouble
