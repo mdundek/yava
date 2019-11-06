@@ -1,8 +1,8 @@
 # Private Voice Assistant
 
-![Assistant header](header.png)
-
 The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry Pi 2/3. I have not tested it on a Raspberry Pi 4 or Zero, so if you do test it on those platforms, please let me know how it goes. 
+
+<img width="100%" src="header.png">
 
 ## Table of contents
 
