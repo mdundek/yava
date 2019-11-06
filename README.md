@@ -489,6 +489,8 @@ To run the voice assistant, simply execute the following command from the reposi
 COMPOSE_HTTP_TIMEOUT=300 docker-compose up -d
 ```
 
+> If you run the assistant for the first time, then docker will have to download all required images first. Be patient, this might take a while depending on your connection speed (Raspberries tend to be slower, except for the RPi 4 due to it's revised bus architecture). 
+
 This will also restart the assistant automatically on reboot, untill you explicitly did a `docker-compose down`
 
 To see the broker logs once started (ex. for debugging):
