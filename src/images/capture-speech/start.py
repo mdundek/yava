@@ -58,6 +58,12 @@ def capture_speech(sessionId, payload):
                 "reason": "AUD_TMO",
                 "ts": datetime.timestamp(datetime.now())
             }))
+        except WaitTimeoutError:
+            ogger.error(e)
+            client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                "reason": "AUD_TMO",
+                "ts": datetime.timestamp(datetime.now())
+            }))
         except Exception as e:
             logger.error(e)
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({

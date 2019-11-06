@@ -110,9 +110,9 @@ class PrivateVoiceAssistant {
             } else if (topic.indexOf("PASSIST/API/TIMEOUT/") == 0) {
                 let sessionId = topic.split("/").pop();
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.sessionId == sessionId){
-                    let _err = API_SESSION_OBJECT.err;
+                    let _next = API_SESSION_OBJECT.next;
                     API_SESSION_OBJECT = null;
-                    _err(JSON.parse(message.toString("UTF-8")));
+                    _next(null);
                 }
             }    
         });
