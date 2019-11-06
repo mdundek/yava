@@ -74,6 +74,6 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect
 
-client.connect("pvi-mosquitto", 1883, 60)
+client.connect("pva-mosquitto", 1883, 60)
 logger.info("MQTT Connecting...")
 client.loop_forever()

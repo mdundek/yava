@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 
-const client = mqtt.connect('mqtt://pvi-mosquitto');
+const client = mqtt.connect('mqtt://pva-mosquitto');
 const shortid = require('shortid');
 
 let SESSIONS = {};

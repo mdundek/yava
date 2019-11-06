@@ -311,18 +311,18 @@ If you want to use two speech to text engines in your solution, one to run offli
 In the `docker-compose.yml` config file, locate and uncomment the block that you want to use for your secondary __*** STT__ engine, and modify it like in the example below:
 
 ```yaml
-pvi-stt-alt:
-    image: pvi-stt-google:0.9-arm
+pva-stt-alt:
+    image: pva-stt-google:0.9-arm
     restart: always
-    container_name: pvi-stt-alt
+    container_name: pva-stt-alt
     environment:
       - STT_ALT=1
     volumes:
       - ./resources/google/credentials.json:/usr/src/app/credentials.json
     networks:
-      - pvi-network
+      - pva-network
     depends_on:
-      - pvi-mosquitto
+      - pva-mosquitto
 ```
 
 Note the `-alt` part appended to the block name as well as to the container name, and the extra environement variable set as `STT_ALT=1`. Those modifications apply to any of the three STT engines available.  

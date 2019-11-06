@@ -72,7 +72,7 @@ clientMqtt.on_connect = on_connect
 clientMqtt.on_message = on_message
 clientMqtt.on_disconnect = on_disconnect
 
-clientMqtt.connect("pvi-mosquitto", 1883, 60)
+clientMqtt.connect("pva-mosquitto", 1883, 60)
 
 logger.info("MQTT Connecting...")
 
