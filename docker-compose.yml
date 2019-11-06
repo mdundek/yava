@@ -82,8 +82,6 @@ services:
   #     - /dev/snd:/dev/snd
   #   networks:
   #     - pva-network
-  #   volumes:
-  #     - ./resources/snowboy/models/Hotword.pmdl:/usr/src/app/models/Hotword.pmdl
   #   depends_on:
   #     - pva-mosquitto
 

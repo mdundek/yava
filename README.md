@@ -508,7 +508,7 @@ docker-compose down
 ### NodeJS<a name="libnode"></a>
 
 For now, the client library is not available on NPM. this will change soon wonce I get the time to do so.  
-In the meanwhile, simply copy the folder `libraries/NodeJS/pva` to your NodeJS project.  
+In the meanwhile, simply copy the folder `src/libraries/NodeJS/pva` to your NodeJS project.  
 
 Require the client library and connect to the PVA host:
 
@@ -631,3 +631,10 @@ if(PrivateVoiceAssistant.connected){
 
 
 ### Python<a name="libpy"></a>
+
+
+docker run --rm \
+  -v $PWD/resources/nlu/models:/usr/src/app/models \
+  -v $PWD/resources/nlu/training_data/train.yaml:/usr/src/app/training_data/train.yaml \
+  md76/pva-nlu-light:0.9-arm \
+  python train.py
