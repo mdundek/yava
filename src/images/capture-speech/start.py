@@ -50,6 +50,7 @@ def capture_speech(sessionId, payload):
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
         except TimeoutException:
+            ogger.error(e)
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_TMO",
                 "ts": datetime.timestamp(datetime.now())
