@@ -19,15 +19,17 @@ do
     # ------------------------- NLP SPACY -----------------------
     if [ "$i" == "nlp-spacy-arm" ]; then
         cd nlu-spacy
+        echo "===> BUILDING $i md..."
         docker build --build-arg BUILDTIME_LANGUAGE=en --build-arg BUILDTIME_SPACY_MODEL=en_core_web_md -t pva-nlu-spacy-arm-md .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
+        echo "===> BUILDING $i sm..."
         docker build --build-arg BUILDTIME_LANGUAGE=en --build-arg BUILDTIME_SPACY_MODEL=en_core_web_sm -t pva-nlu-spacy-arm-sm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -42,15 +44,17 @@ do
 
     if [ "$i" == "nlp-spacy-amd64" ]; then
         cd nlu-spacy
+        echo "===> BUILDING $i md..."
         docker build --build-arg BUILDTIME_LANGUAGE=en --build-arg BUILDTIME_SPACY_MODEL=en_core_web_md -f ./DockerfileNoARM.txt -t pva-nlu-spacy-md .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
+        echo "===> BUILDING $i sm..."
         docker build --build-arg BUILDTIME_LANGUAGE=en --build-arg BUILDTIME_SPACY_MODEL=en_core_web_sm -f ./DockerfileNoARM.txt -t pva-nlu-spacy-sm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -66,9 +70,10 @@ do
     # ------------------------- NLP LIGHT -----------------------
     if [ "$i" == "nlp-light-arm" ]; then
         cd nlu-light
+        echo "===> BUILDING $i..."
         docker build -t pva-nlu-light-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -79,9 +84,10 @@ do
 
     if [ "$i" == "nlp-light-amd64" ]; then
         cd nlu-light
+        echo "===> BUILDING $i..."
         docker build -t pva-nlu-light .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -93,9 +99,10 @@ do
     # ------------------------- MOSQUITTO -----------------------
     if [ "$i" == "nlp-mosquitto-arm" ]; then
         cd mosquitto
+        echo "===> BUILDING $i..."
         docker build -t pva-mosquitto-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -106,9 +113,10 @@ do
 
     if [ "$i" == "nlp-mosquitto-amd64" ]; then
         cd mosquitto
+        echo "===> BUILDING $i..."
         docker build -t pva-mosquitto-amd64 .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -120,9 +128,10 @@ do
     # ------------------------- CAPTURE SPEECH -----------------------
     if [ "$i" == "capture-speech-arm" ]; then
         cd capture-speech
+        echo "===> BUILDING $i..."
         docker build -t pva-capture-speech-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -133,9 +142,10 @@ do
 
     if [ "$i" == "capture-speech-amd64" ]; then
         cd capture-speech
+        echo "===> BUILDING $i..."
         docker build -t pva-capture-speech .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -147,9 +157,10 @@ do
     # ------------------------- HOTWORD PORCUPINE -----------------------
     if [ "$i" == "hotword-porcupine-arm" ]; then
         cd hotword-porcupine
+        echo "===> BUILDING $i..."
         docker build -t pva-hotword-porcupine-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -160,9 +171,10 @@ do
 
     if [ "$i" == "hotword-porcupine-amd64" ]; then
         cd hotword-porcupine
+        echo "===> BUILDING $i..."
         docker build -t pva-hotword-porcupine .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -174,9 +186,10 @@ do
     # ------------------------- HOTWORD SNOWBOY -----------------------
     if [ "$i" == "hotword-snowboy-arm" ]; then
         cd hotword-snowboy
+        echo "===> BUILDING $i..."
         docker build -t pva-hotword-snowboy-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -187,9 +200,10 @@ do
 
     if [ "$i" == "hotword-snowboy-amd64" ]; then
         cd hotword-snowboy
+        echo "===> BUILDING $i..."
         docker build -t pva-hotword-snowboy .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -201,9 +215,10 @@ do
     # ------------------------- ORCHESTRATOR -----------------------
     if [ "$i" == "orchestrator-arm" ]; then
         cd orchestrator
+        echo "===> BUILDING $i..."
         docker build -t pva-orchestrator-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -214,9 +229,10 @@ do
 
     if [ "$i" == "orchestrator-amd64" ]; then
         cd orchestrator
+        echo "===> BUILDING $i..."
         docker build -t pva-orchestrator .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -228,9 +244,10 @@ do
     # ------------------------- STT GOOGLE -----------------------
     if [ "$i" == "stt-google-arm" ]; then
         cd stt-google
+        echo "===> BUILDING $i..."
         docker build -t pva-stt-google-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -241,9 +258,10 @@ do
 
     if [ "$i" == "stt-google-amd64" ]; then
         cd stt-google
+        echo "===> BUILDING $i..."
         docker build -t pva-stt-google .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -255,9 +273,10 @@ do
     # ------------------------- STT POCKETSPHINX -----------------------
     if [ "$i" == "stt-pocketsphinx-arm" ]; then
         cd stt-pocketsphinx
+        echo "===> BUILDING $i..."
         docker build -t pva-stt-pocketsphinx-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -268,9 +287,10 @@ do
 
     if [ "$i" == "stt-pocketsphinx-amd64" ]; then
         cd stt-pocketsphinx
+        echo "===> BUILDING $i..."
         docker build -t pva-stt-pocketsphinx .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -282,9 +302,10 @@ do
     # ------------------------- STT WIT -----------------------
     if [ "$i" == "stt-wit-arm" ]; then
         cd stt-wit
+        echo "===> BUILDING $i..."
         docker build -t pva-stt-wit-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -295,9 +316,10 @@ do
 
     if [ "$i" == "stt-wit-amd64" ]; then
         cd stt-wit
+        echo "===> BUILDING $i..."
         docker build -t pva-stt-wit .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -309,9 +331,10 @@ do
     # ------------------------- TTS MIMIC -----------------------
     if [ "$i" == "tts-mimic-arm" ]; then
         cd tts-mimic
+        echo "===> BUILDING $i..."
         docker build -t pva-tts-mimic-arm .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
@@ -322,9 +345,10 @@ do
 
     if [ "$i" == "tts-mimic-amd64" ]; then
         cd tts-mimic
+        echo "===> BUILDING $i..."
         docker build -t pva-tts-mimic .
         if [ $? -eq 0 ]; then
-            echo "===> Build OK"
+            echo "===> BUILD SUCCESSFULL"
         else
             exit 1
         fi
