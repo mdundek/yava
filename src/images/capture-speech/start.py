@@ -50,13 +50,13 @@ def capture_speech(sessionId, payload):
             else:
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
-        except TimeoutException as e:
-            logger.error("TimeoutException thrown:")
-            logger.error(e)
-            client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-                "reason": "AUD_TMO",
-                "ts": datetime.timestamp(datetime.now())
-            }))
+        # except TimeoutException as e:
+        #     logger.error("TimeoutException thrown:")
+        #     logger.error(e)
+        #     client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+        #         "reason": "AUD_TMO",
+        #         "ts": datetime.timestamp(datetime.now())
+        #     }))
         # except WaitTimeoutError as e:
         #     logger.info("WaitTimeoutError thrown:")
         #     logger.error(e)
@@ -65,8 +65,8 @@ def capture_speech(sessionId, payload):
         #         "ts": datetime.timestamp(datetime.now())
         #     }))
         except Exception as e:
-            logger.error("Exception thrown:")
-            logger.error(e)
+            if e == "listening timed out while waiting for phrase to start":
+                logger.error("TimeoutException")
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_ERR",
                 "ts": datetime.timestamp(datetime.now())
