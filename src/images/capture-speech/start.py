@@ -30,7 +30,6 @@ sample_rate = 16000
 
 r = sr.Recognizer()
 r.dynamic_energy_threshold = True
-# r.energy_threshold = 4000
 MQTT_CONNECTED = False
 
 def capture_speech(sessionId, payload):
@@ -41,7 +40,7 @@ def capture_speech(sessionId, payload):
             audio = r.listen(source, timeout=5, phrase_time_limit=20)
             end_ms = time.time_ns()
 
-            duration_ms = (end_ms - start_ms) / 10000
+            duration_ms = (end_ms - start_ms) / 100000
             logger.info("Duration in ms ==> " + str(duration_ms))
 
             wav_data = audio.get_wav_data()
