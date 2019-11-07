@@ -38,7 +38,7 @@ def capture_speech(sessionId, payload):
         r.adjust_for_ambient_noise(source, duration=0.7)
         try:
             logger.info("===> START LISTENING")
-            audio = r.listen(source, timeout=5)
+            audio = r.listen(source, timeout=5, phrase_time_limit=20)
             logger.info("===> STOP LISTENING")
 
             wav_data = audio.get_wav_data()
@@ -52,20 +52,23 @@ def capture_speech(sessionId, payload):
             else:
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
-        except TimeoutException as e:
-            logger.info("TimeoutException")
-            client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-                "reason": "AUD_TMO",
-                "ts": datetime.timestamp(datetime.now())
-            }))
-        except WaitTimeoutError as e:
-            logger.info("WaitTimeoutError")
-            client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-                "reason": "AUD_TMO",
-                "ts": datetime.timestamp(datetime.now())
-            }))
+        # except TimeoutException as e:
+        #     logger.info("TimeoutException thrown:")
+        #     logger.error(e)
+        #     client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+        #         "reason": "AUD_TMO",
+        #         "ts": datetime.timestamp(datetime.now())
+        #     }))
+        # except WaitTimeoutError as e:
+        #     logger.info("WaitTimeoutError thrown:")
+        #     logger.error(e)
+        #     client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+        #         "reason": "AUD_TMO",
+        #         "ts": datetime.timestamp(datetime.now())
+        #     }))
         except Exception as e:
-            logger.info(e)
+            logger.error("Exception thrown:")
+            logger.error(e)
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_ERR",
                 "ts": datetime.timestamp(datetime.now())
