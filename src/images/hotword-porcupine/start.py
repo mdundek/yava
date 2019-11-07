@@ -42,7 +42,8 @@ porcupine = None
 pa = None
 audio_stream = None
 sample_rate = None
-num_keywords = 2
+
+firstConnect = False
 
 keyword_file_paths = []
 for r, d, f in os.walk("./models"):
@@ -95,6 +96,7 @@ def start_hw_detector_thread():
 def start_hw_detector():
     global porcupine
     if len(keyword_file_paths) > 0:
+        num_keywords = 1
         porcupine = pvporcupine.create(
             library_path=library_path,
             model_file_path=model_file_path,
@@ -103,6 +105,8 @@ def start_hw_detector():
         )
     else:
         hotwords = os.environ['SYSTEM_HOTWORDS'].split(",")
+        num_keywords = len(hotwords)
+
         porcupine = pvporcupine.create(keywords=hotwords)
 
     global pa
@@ -166,6 +170,11 @@ def on_connect(client, userdata, flags, rc):
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
+
+    global firstConnect
+    if firstConnect is False:
+        firstConnect = True
+        client.publish("PASSIST/HOTWORD/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))

@@ -28,7 +28,7 @@ logging.basicConfig()
 logger = logging.getLogger(PROCESS_TOPIC + "=>")
 logger.setLevel(logging.INFO)
 
-# r = sr.Recognizer()
+firstConnect = False
 
 MQTT_CONNECTED = False
 
@@ -39,6 +39,11 @@ def on_connect(client, userdata, flags, rc):
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
+
+    global firstConnect
+    if firstConnect is False:
+        firstConnect = True
+        client.publish("PASSIST/STT/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))

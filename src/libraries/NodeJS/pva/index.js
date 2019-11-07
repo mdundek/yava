@@ -143,6 +143,9 @@ class PrivateVoiceAssistant {
             if(_BORROWED_FLAG) {
                 return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
             }
+            if(!this.connected) {
+                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
+            }
 
             _BORROWED_FLAG = true;
 
@@ -176,72 +179,80 @@ class APISession {
     
     speekOut(text) {
         return new Promise((res, rej) => {
-            if(API_SESSION_OBJECT){
-                rej({ reason: 'SES_BUS', ts: new Date().getTime() });
-            } else{
-                API_SESSION_OBJECT = {
-                    "sessionId": this.sessionId,
-                    "action": "speekOut",
-                    "next": res,
-                    "err": rej
-                };
-                if(!_BORROWED_FLAG){
-                    this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
-                    _BORROWED_FLAG = true;
-                }
-                this._client.publish("PASSIST/TTS/SAY/" + this.sessionId, JSON.stringify({ text: text, ts: new Date().getTime() }));
+            if(!PrivateVoiceAssistant.connected) {
+                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
             }
+            if(API_SESSION_OBJECT){
+                return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
+            } 
+            API_SESSION_OBJECT = {
+                "sessionId": this.sessionId,
+                "action": "speekOut",
+                "next": res,
+                "err": rej
+            };
+            if(!_BORROWED_FLAG){
+                this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                _BORROWED_FLAG = true;
+            }
+            this._client.publish("PASSIST/TTS/SAY/" + this.sessionId, JSON.stringify({ text: text, ts: new Date().getTime() }));
         });
     }
 
     listenAndTranscribe(opt) {
         return new Promise((res, rej) => {
-            if(API_SESSION_OBJECT){
-                rej({ reason: 'SES_BUS', ts: new Date().getTime() });
-            } else{
-                API_SESSION_OBJECT = {
-                    "sessionId": this.sessionId,
-                    "action": "listenAndTranscribe",
-                    "next": res,
-                    "err": rej
-                };
-                if(opt && opt.stt_alt === true)
-                    API_SESSION_OBJECT.stt_alt = true;
-
-                    if(!_BORROWED_FLAG){
-                        this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
-                        _BORROWED_FLAG = true;
-                    }
-                this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
+            if(!PrivateVoiceAssistant.connected) {
+                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
             }
+            if(API_SESSION_OBJECT){
+                return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
+            } 
+            API_SESSION_OBJECT = {
+                "sessionId": this.sessionId,
+                "action": "listenAndTranscribe",
+                "next": res,
+                "err": rej
+            };
+            if(opt && opt.stt_alt === true)
+                API_SESSION_OBJECT.stt_alt = true;
+
+                if(!_BORROWED_FLAG){
+                    this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                    _BORROWED_FLAG = true;
+                }
+            this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
         });
     }
 
     listenAndMatchIntent(opt) {
         return new Promise((res, rej) => {
-            if(API_SESSION_OBJECT){
-                rej({ reason: 'SES_BUS', ts: new Date().getTime() });
-            } else{
-                API_SESSION_OBJECT = {
-                    "sessionId": this.sessionId,
-                    "action": "listenAndMatchIntent",
-                    "next": res,
-                    "err": rej
-                };
-                if(opt && opt.stt_alt === true)
-                    API_SESSION_OBJECT.stt_alt = true;
-                    if(!_BORROWED_FLAG){
-                        this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
-                        _BORROWED_FLAG = true;
-                    }
-                this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
+            if(!PrivateVoiceAssistant.connected) {
+                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
             }
+            if(API_SESSION_OBJECT){
+                return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
+            } 
+            API_SESSION_OBJECT = {
+                "sessionId": this.sessionId,
+                "action": "listenAndMatchIntent",
+                "next": res,
+                "err": rej
+            };
+            if(opt && opt.stt_alt === true)
+                API_SESSION_OBJECT.stt_alt = true;
+                if(!_BORROWED_FLAG){
+                    this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                    _BORROWED_FLAG = true;
+                }
+            this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
         });
     }
 
     done() {
-        this._client.publish("PASSIST/API/RELEASE_SESSION/" + this.sessionId, "");
-        _BORROWED_FLAG = false;
+        if(PrivateVoiceAssistant.connected) {
+            this._client.publish("PASSIST/API/RELEASE_SESSION/" + this.sessionId, "");
+        }
+        _BORROWED_FLAG = false;        
     }
 }
  

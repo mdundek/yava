@@ -186,7 +186,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     volumes:
       - ./resources/snowboy/models/<YOUR HOTWORD MODEL FILE>:/usr/src/app/models/Hotword.pmdl
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 Replace the `<YOUR HOTWORD MODEL FILE>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
@@ -212,7 +212,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 Update the environement variable `SYSTEM_HOTWORDS` according to your needs, based on the available public hotwords listed above.   
@@ -255,7 +255,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 To use a different language model, place it under the `resources/pocketsphinx/model` folder, and update the compose configuration block accordingly.
@@ -280,7 +280,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 #### Configure Google STT<a name="googlestt"></a>
@@ -301,7 +301,7 @@ pva-stt:
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 #### Configure a second STT container (optional)<a name="secondarystt"></a>
@@ -322,7 +322,7 @@ pva-stt-alt:
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 Note the `-alt` part appended to the block name as well as to the container name, and the extra environement variable set as `STT_ALT=1`. Those modifications apply to any of the three STT engines available.  
@@ -434,7 +434,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     environment:
       - LANGUAGE=en
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
@@ -454,7 +454,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     volumes:
       - ./resources/nlu/models:/usr/src/app/models
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.  

@@ -8,6 +8,7 @@ logger = logging.getLogger("TTS=>")
 logger.setLevel(logging.INFO)
 
 MQTT_CONNECTED = False
+firstConnect = False
 
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
@@ -15,6 +16,11 @@ def on_connect(client, userdata, flags, rc):
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
+
+    global firstConnect
+    if firstConnect is False:
+        firstConnect = True
+        client.publish("PASSIST/TTS/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))

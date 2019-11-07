@@ -17,6 +17,8 @@ logger.setLevel(logging.INFO)
 # Declare the detector object
 detector = None
 
+firstConnect = False
+
 MQTT_CONNECTED = False
 DETECTOR_RUNNING = False
 
@@ -73,6 +75,11 @@ def on_connect(client, userdata, flags, rc):
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
+
+    global firstConnect
+    if firstConnect is False:
+        firstConnect = True
+        client.publish("PASSIST/HOTWORD/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))

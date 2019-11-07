@@ -15,6 +15,7 @@ MQTT_CONNECTED = False
 
 matcher = None
 trainingSets = None
+firstConnect = False
 
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
@@ -25,18 +26,22 @@ def on_connect(client, userdata, flags, rc):
         trainingSets = utteranceGen.generateTrainingSet()
     
     global matcher
-    matcher = classifier.NodeMatcher(
-        trainingSets["spacy"], 
-        intentsModelFile="/usr/src/app/models/intents/model.nlp", 
-        language=os.environ['LANGUAGE']
-    )
+    if matcher is None:
+        matcher = classifier.NodeMatcher(
+            trainingSets["spacy"], 
+            intentsModelFile="/usr/src/app/models/intents/model.nlp", 
+            language=os.environ['LANGUAGE']
+        )
 
-    client.subscribe("PASSIST/NLP/MATCH/+")
+        client.subscribe("PASSIST/NLP/MATCH/+")
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
 
-    client.publish("PASSIST/NLP/READY", "")
+    global firstConnect
+    if firstConnect is False:
+        firstConnect = True
+        client.publish("PASSIST/NLP/READY", "")
 
 
 def on_disconnect(client, userdata, rc):

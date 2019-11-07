@@ -42,7 +42,7 @@ services:
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 
   # ************************ CAPTURE SPEECH **************************
 
@@ -55,7 +55,7 @@ services:
     networks:
       - pva-network
     depends_on:
-      - pva-mosquitto
+      - pva-orchestrator
 
   # ************************ HOTWORD **************************
     
@@ -70,7 +70,7 @@ services:
   #   volumes:
   #     - ./resources/snowboy/models/Hotword.pmdl:/usr/src/app/models/Hotword.pmdl
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator
 
   # pva-hotword:
   #   image: md76/pva-hotword-porcupine:${PVA_VERSION}-arm
@@ -83,7 +83,7 @@ services:
   #   networks:
   #     - pva-network
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator
 
   # ************************ STT **************************
 
@@ -98,7 +98,7 @@ services:
   #   networks:
   #     - pva-network
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator
 
   # pva-stt:
   #   image: md76/pva-stt-pocketsphinx:${PVA_VERSION}-arm
@@ -115,7 +115,7 @@ services:
   #   networks:
   #     - pva-network
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator
 
   # pva-stt:
   #   image: md76/pva-stt-google:${PVA_VERSION}-arm
@@ -128,7 +128,7 @@ services:
   #   networks:
   #     - pva-network
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator
 
   
   # ************************ NLU **************************
@@ -145,7 +145,7 @@ services:
   #   environment:
   #     - LANGUAGE=en
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator
 
   # pva-nlu:
   #   image: md76/pva-nlu-spacy:${PVA_VERSION}-en-sm-arm
@@ -159,4 +159,4 @@ services:
   #     - LANGUAGE=en
   #     - SPACY_MODEL=en_core_web_sm
   #   depends_on:
-  #     - pva-mosquitto
+  #     - pva-orchestrator

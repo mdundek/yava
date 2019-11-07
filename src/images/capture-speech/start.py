@@ -3,6 +3,7 @@ import logging
 import speech_recognition as sr
 import json
 import time
+import os
 import paho.mqtt.client as mqtt
 import wave
 import contextlib
@@ -27,6 +28,8 @@ logger = logging.getLogger("CAPTURE=>")
 logger.setLevel(logging.INFO)
 
 sample_rate = 16000
+
+firstConnect = False
 
 r = sr.Recognizer()
 r.dynamic_energy_threshold = True
@@ -77,6 +80,11 @@ def on_connect(client, userdata, flags, rc):
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
+
+    global firstConnect
+    if firstConnect is False:
+        firstConnect = True
+        client.publish("PASSIST/RECORD_SPEECH/READY", "")
 
 
 def on_disconnect(client, userdata, rc):
