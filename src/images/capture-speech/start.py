@@ -65,7 +65,10 @@ def capture_speech(sessionId, payload):
         #         "ts": datetime.timestamp(datetime.now())
         #     }))
         except Exception as e:
-            logger.error(type(e))
+            logger.error(type(e).__name__)
+            if type(e).__name__ == "WaitTimeoutError":
+                logger.error("YEP")
+                
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_ERR",
                 "ts": datetime.timestamp(datetime.now())
