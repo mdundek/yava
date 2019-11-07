@@ -57,3 +57,8 @@ You see, there are alot of situations where you need flexibility of the solution
 - Possibility to transcribe text without NLU matching on demand
 - Possibility to hyjack and control the assistant from your application, rather than from a hotword
 - Possibility to use 2 separate speech to text engines for customized workflows
+
+
+## What's next
+
+This project is fairly recent, and should be considered as work in progress. 

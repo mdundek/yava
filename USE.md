@@ -94,14 +94,6 @@ Once the training is done, you will see a new files in the folder `resources/nlu
 > To do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
 
 
-
-
-
-
-
-
-
-
 ## Start the voice assistant<a name="startassistant"></a>
 
 > IMPORTANT: Make sure you configured the various components according to the above section, and train your NLU model before you start the solution.
