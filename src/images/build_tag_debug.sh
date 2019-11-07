@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ONE LINER => git pull https://"mdundek":"R3b3cc8!"@github.com/mdundek/private-voice-assistant.git && ./build_tag_debug.sh capture-speech-arm
+
 args=("$@")
 
 if [ ${#args[@]} -eq 0 ]; then
