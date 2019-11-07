@@ -35,11 +35,9 @@ MQTT_CONNECTED = False
 
 def capture_speech(sessionId, payload):
     with sr.Microphone(sample_rate=sample_rate) as source:
-        r.adjust_for_ambient_noise(source, duration=0.7)
+        r.adjust_for_ambient_noise(source, duration=0.5)
         try:
-            logger.info("===> START LISTENING")
-            audio = r.listen(source, timeout=5, phrase_time_limit=10)
-            logger.info("===> STOP LISTENING")
+            audio = r.listen(source, timeout=5, phrase_time_limit=20)
 
             wav_data = audio.get_wav_data()
             if len(wav_data) > 500000:
@@ -52,13 +50,13 @@ def capture_speech(sessionId, payload):
             else:
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
-        # except TimeoutException as e:
-        #     logger.info("TimeoutException thrown:")
-        #     logger.error(e)
-        #     client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-        #         "reason": "AUD_TMO",
-        #         "ts": datetime.timestamp(datetime.now())
-        #     }))
+        except TimeoutException as e:
+            logger.error("TimeoutException thrown:")
+            logger.error(e)
+            client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                "reason": "AUD_TMO",
+                "ts": datetime.timestamp(datetime.now())
+            }))
         # except WaitTimeoutError as e:
         #     logger.info("WaitTimeoutError thrown:")
         #     logger.error(e)
