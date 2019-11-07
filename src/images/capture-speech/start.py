@@ -37,9 +37,9 @@ def capture_speech(sessionId, payload):
     with sr.Microphone(sample_rate=sample_rate) as source:
         r.adjust_for_ambient_noise(source, duration=0.5)
         try:
-            
+            logger.info("===> START LISTENING")
             audio = r.listen(source, timeout=5, phrase_time_limit=20)
-
+            logger.info("===> STOP LISTENING")
 
             wav_data = audio.get_wav_data()
             if len(wav_data) > 500000:
