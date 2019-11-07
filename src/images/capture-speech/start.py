@@ -82,7 +82,7 @@ def on_connect(client, userdata, flags, rc):
     MQTT_CONNECTED = True
 
     global firstConnect
-    if firstConnect == False:
+    if firstConnect is False:
         firstConnect = True
         client.publish("PASSIST/RECORD_SPEECH/READY", "")
 
