@@ -38,10 +38,10 @@ def capture_speech(sessionId, payload):
         r.adjust_for_ambient_noise(source, duration=0.5)
         try:
             start_ms = time.time_ns()
-            audio = r.listen(source, timeout=5, phrase_time_limit=6)
+            audio = r.listen(source, timeout=5, phrase_time_limit=20)
             end_ms = time.time_ns()
 
-            duration_ms = end_ms - start_ms
+            duration_ms = (end_ms - start_ms) / 1000
             logger.info("Duration in ms ==> " + str(duration_ms))
 
             wav_data = audio.get_wav_data()
