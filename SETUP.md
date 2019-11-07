@@ -1,3 +1,5 @@
+# Configuration & Setup<a name="configure"></a>
+
 ## Table of contents
 
 * [Prepare your configuration files](#prepare)
@@ -20,8 +22,6 @@
 * [Ortchestrator](#orchestrator)  
 * [MQTT broker](#mqtt)  
 
-## Configuration & Setup<a name="configure"></a>
-
 <!-- Start by applying permissions to all shared folders and files used by docker compose
 
 ```shell
@@ -42,14 +42,14 @@ The assistant uses docker-compose, and requires the following containers to func
 
 Before you can go ahead and start up the assistant, you will have to prepare and set up some configuration files first. 
 
-### Prepare your configuration files<a name="prepare"></a>
+## Prepare your configuration files<a name="prepare"></a>
 
 All configuration files are to be placed under the `resources`folder of this repository, according to the specific container.  
 
 In some cases, you will also have to configure the `docker-compose` __yaml__ file, I will document those parts for each docker image available for the solution.  
 This file is called `docker-compose.yml`, and is situated at the root of this repository.
 
-### 1. Hotword detector<a name="hotword"></a>
+## 1. Hotword detector<a name="hotword"></a>
 
 At the moment, I created two different hotword detector images:
 
@@ -58,7 +58,7 @@ At the moment, I created two different hotword detector images:
 
 Choose one of the two that you would like to use in your project, and configure it.
 
-#### Configure Snowboy<a name="snowboy"></a>
+### Configure Snowboy<a name="snowboy"></a>
 
 Grab a model if you don't want to use the default one (Hey Alice). To do so, download a public hotword from the Snowboy website, or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
 Attention, only one hotword file is allowed the `resources/snowboy/models` folder. So if you download your own hotword file, please delete the default hotword file first.
@@ -85,7 +85,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 Replace the `<YOUR HOTWORD MODEL FILE>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
 
 
-#### Configure Porcupine<a name="porcupine"></a>
+### Configure Porcupine<a name="porcupine"></a>
 
 By default, Porcupine comes with the following available hotwords out of the box:  
 
@@ -112,12 +112,12 @@ Update the environement variable `SYSTEM_HOTWORDS` according to your needs, base
 
 > At the time being, custom hotwords with Porcupine are not possible. If someone has purchased a custom hotword from them, and would like to use it, please contact me and I will update the image and documentation accordingly 
 
-### 2. Speech capture<a name="speechcapture"></a>
+## 2. Speech capture<a name="speechcapture"></a>
 
 You do not need to configure this one, it should work as intended out of the box
 
 
-### 3. Speech to text<a name="stt"></a>
+## 3. Speech to text<a name="stt"></a>
 
 At the moment, I created three different speech to text images:
 
@@ -127,7 +127,7 @@ At the moment, I created three different speech to text images:
 
 Choose one of the three as your main TTS engine, and configure it. Optionally, you can set up a second STT engine that can be used on demand using the APIs.
 
-#### Configure Pocketsphinx STT<a name="pocketsphinx"></a>
+### Configure Pocketsphinx STT<a name="pocketsphinx"></a>
 
 By default, I added an English US model that requires no configuration to be used.  
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Pocketsphinx STT__:
@@ -154,7 +154,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 To use a different language model, place it under the `resources/pocketsphinx/model` folder, and update the compose configuration block accordingly.
 
 
-#### Configure WIT STT<a name="wit"></a>
+### Configure WIT STT<a name="wit"></a>
 
 WIT is a free, cloud based voice assistant solution that also has STT APIs. This is a good compromise if you don't care about privacy, and would like something that is completely free no matter how much you use it (there are of course common sence limits imposed by WIT). The response time is not as good as what Google has to offer, but then again, it's free!  
 
@@ -176,7 +176,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
       - pva-orchestrator
 ```
 
-#### Configure Google STT<a name="googlestt"></a>
+### Configure Google STT<a name="googlestt"></a>
 
 Google has the best performance and accuracy of the three solutions, but it is not free to use once you passed the 60 min / month barrier.  
 You will first have to create a Google Cloud Service Account Key, and download the json file. For more information, please refer to the google documentation [here](https://cloud.google.com/speech-to-text/docs/reference/libraries). Also, donrt forget to enable the Google Cloud Speech API in your GCP console.  
@@ -197,7 +197,7 @@ pva-stt:
       - pva-orchestrator
 ```
 
-#### Configure a second STT container (optional)<a name="secondarystt"></a>
+### Configure a second STT container (optional)<a name="secondarystt"></a>
 
 If you want to use two speech to text engines in your solution, one to run offline on the device for privacy for example, and one for accurate transcription on the cloud for specific commands within your application flow, then read on.  
 
@@ -222,7 +222,7 @@ Note the `-alt` part appended to the block name as well as to the container name
 
 To see how you can use the secondary STT engine, refer to the section How to use the PVA client API.
 
-### 4. NLU<a name="nlu"></a>
+## 4. NLU<a name="nlu"></a>
 
 At the moment, I created two different NLU processing images:
 
@@ -231,7 +231,7 @@ At the moment, I created two different NLU processing images:
 
 Choose one of the two as your main NLP engine, and configure it. 
 
-#### Prepare your training data<a name="confignlu"></a>
+### Prepare your training data<a name="confignlu"></a>
 
 First, you need to create your NLU training data. There is a sample training data file that you can get inspiration from here: `resources/nlu/training_data/training_example.yaml`.
 
@@ -275,7 +275,7 @@ __intents__: List your intents here, and provide samples utterances that a user 
 
 To train your model, you will have to use the appropriate docker image. Please read on for more details.
 
-#### Train model for NLU Light<a name="nlulighttrain"></a>
+### Train model for NLU Light<a name="nlulighttrain"></a>
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
@@ -291,7 +291,7 @@ Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml
 Once the training is done, you will see a new file in the folder `resources/nlu/models/intents/model.nlp`.
 
 
-#### Train model for NLU Spacy<a name="nluspacytrain"></a>
+### Train model for NLU Spacy<a name="nluspacytrain"></a>
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
@@ -310,7 +310,7 @@ Once the training is done, you will see a new files in the folder `resources/nlu
 > You can also use a more powerfull machine to train your model, and then move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/` accordingly.  
 > To do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
 
-#### Configure NLU Light<a name="nlulight"></a>
+### Configure NLU Light<a name="nlulight"></a>
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Light__:
 
@@ -333,7 +333,7 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
 
 
-#### Configure NLU Spacy<a name="nluspacy"></a>
+### Configure NLU Spacy<a name="nluspacy"></a>
 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Spacy__:
 
@@ -355,18 +355,18 @@ Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml
 > If you pay attention to the image tag used here, you will notice that we are using the tag `0.9-en-sm-arm`. This tag means that this image was build with the Spacy English model called `en_core_web_sm`, based on the ARM architecture. I will make other images available with larger base models such as `en_core_web_md` for better entity recognition, as well as Intel / AMD based architectures for training on different machines.
 
 
-### 5. Text to speech<a name="tts"></a>
+## 5. Text to speech<a name="tts"></a>
 
 At the moment, I only implemented one TTS engine that is based on Microft Mimic1 engine. It is the best open source TTS engine I have seen that works offline, but unfortunately it only supports English.  
 I will implement two more TTS engines in the comming weeks, one based on ESpeak for multi-language offline support, and one based on Google Cloud TTS for high quality voice.  
 
 You do not need to configure this one, it should work as intended out of the box
 
-### 6. Ortchestrator<a name="orchestrator"></a>
+## 6. Ortchestrator<a name="orchestrator"></a>
 
 You do not need to configure this one, it should work as intended out of the box
 
 
-### 7. MQTT broker<a name="mqtt"></a>
+## 7. MQTT broker<a name="mqtt"></a>
 
 You do not need to configure this one, it should work as intended out of the box

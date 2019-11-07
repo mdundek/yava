@@ -31,6 +31,7 @@ The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry
 	* [Text to speech](#tts)  
 	* [Ortchestrator](#orchestrator)  
 	* [MQTT broker](#mqtt)  
+* [Start & interact with the PVA](#usage)  
 	* [Start the voice assistant](#startassistant)  
 	* [Use the client libraries](#clientlib)  
 		* [NodeJS](#libnode)  
@@ -478,8 +479,9 @@ You do not need to configure this one, it should work as intended out of the box
 
 You do not need to configure this one, it should work as intended out of the box
 
+## Start & interact with the PVA<a name="usage"></a>
 
-## Start the voice assistant<a name="startassistant"></a>
+### Start the voice assistant<a name="startassistant"></a>
 
 > IMPORTANT: Make sure you configured the various components according to the above section, and train your NLU model before you start the solution.
 
@@ -505,9 +507,9 @@ To stop the assistant:
 PVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
 ```
 
-## Use the client libraries<a name="clientlib"></a>
+### Use the client libraries<a name="clientlib"></a>
 
-### NodeJS<a name="libnode"></a>
+#### NodeJS<a name="libnode"></a>
 
 For now, the client library is not available on NPM. this will change soon wonce I get the time to do so.  
 In the meanwhile, simply copy the folder `src/libraries/NodeJS/pva` to your NodeJS project.  
@@ -632,7 +634,7 @@ if(PrivateVoiceAssistant.connected){
 > IMPORTANT: PVA is not designed to be a multi tenant voice assistant. Use the library syncroniously, one session at a time.
 
 
-### Python<a name="libpy"></a>
+#### Python<a name="libpy"></a>
 
 
 docker run --rm \
