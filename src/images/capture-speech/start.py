@@ -33,6 +33,9 @@ r.dynamic_energy_threshold = True
 MQTT_CONNECTED = False
 
 MAX_PHRASE_LIMIT_SEC = 20
+if "MAX_PHRASE_LIMIT_SEC" in os.environ:
+    MAX_PHRASE_LIMIT_SEC = int(os.environ["MAX_PHRASE_LIMIT_SEC"])
+
 MAX_PHRASE_LIMIT_MS = MAX_PHRASE_LIMIT_SEC * 1000
 
 def capture_speech(sessionId, payload):
