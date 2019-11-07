@@ -6,6 +6,11 @@ const shortid = require('shortid');
 let SESSIONS = {};
 let _BORROWED = false;
 
+let API_SESSION_TIMEOUT_MS = 60000; // default to 1 minute
+if(process.env.API_SESSION_TIMEOUT){
+    API_SESSION_TIMEOUT_MS = parseInt(process.env.API_SESSION_TIMEOUT_MS) * 1000;
+}
+
 client.on('connect', function () {
     console.log("INFO:ORCHESTRATOR=>:MQTT Orchestrator connected");
     client.subscribe('PASSIST/#');
@@ -63,7 +68,7 @@ client.on('message', function (topic, message) {
             // Reset failsafe to 1 minute, in case the client library never finishes closing this session
             SESSIONS[sessionId].inactiveTimeout = setTimeout(function (_sessionId){ 
                 onSessionExpiration(_sessionId)
-            }.bind(this, sessionId), 60000);
+            }.bind(this, sessionId), API_SESSION_TIMEOUT_MS);
 
             setTimeout(() => {
                 client.publish("PASSIST/API/HIJACK_SESSION_READY/" + sessionId, JSON.stringify({ ts: new Date().getTime() }));
@@ -100,7 +105,7 @@ _extendSessionTimeout = (sessionId) => {
     // Reset failsafe to 1 minute, in case the client library never finishes closing this session
     SESSIONS[sessionId].inactiveTimeout = setTimeout(function (_sessionId){ 
         onSessionExpiration(_sessionId)
-    }.bind(this, sessionId), 60000);
+    }.bind(this, sessionId), API_SESSION_TIMEOUT_MS);
 }
 
 /**

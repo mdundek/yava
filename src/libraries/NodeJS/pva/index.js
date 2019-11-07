@@ -97,10 +97,18 @@ class PrivateVoiceAssistant {
                 if(API_SESSION_OBJECT && (sessionId == "NULL" || API_SESSION_OBJECT.sessionId == sessionId)){
 
                     let errorObj = JSON.parse(message.toString("UTF-8"));
-                    if(errorObj.reason == "AUD_TMO" && (API_SESSION_OBJECT.action == "listenAndTranscribe" || API_SESSION_OBJECT.action == "listenAndMatchIntent")){
+                    if(errorObj.reason == "AUD_TMO" && API_SESSION_OBJECT.action == "listenAndTranscribe"){
                         let _next = API_SESSION_OBJECT.next;
                         API_SESSION_OBJECT = null;
-                        _next(null);
+                        _next("");
+                    } else if(errorObj.reason == "AUD_TMO" && API_SESSION_OBJECT.action == "listenAndMatchIntent"){
+                        let _next = API_SESSION_OBJECT.next;
+                        API_SESSION_OBJECT = null;
+                        _next({
+                            "intent": "",
+                            "entities": "",
+                            "utterance": ""
+                        });
                     } else {
                         let _err = API_SESSION_OBJECT.err;
                         API_SESSION_OBJECT = null;
