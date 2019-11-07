@@ -5,6 +5,7 @@ const shortid = require('shortid');
 
 let SESSIONS = {};
 let _BORROWED = false;
+let COMPONENT_READY_COUNTER = [];
 
 let API_SESSION_TIMEOUT_MS = 60000; // default to 1 minute
 if(process.env.API_SESSION_TIMEOUT){
@@ -20,9 +21,19 @@ client.on('connect', function () {
 client.on('message', function (topic, message) {
     console.log("INFO=>:", topic);
 
-    if (topic.indexOf("PASSIST/API/ONLINE/") == 0) {
+    if (topic.endsWith("/READY")) {
+        let componentName = topic.substring(0, topic.lastIndexOf("/"));
+        componentName = componentName.substring(componentName.lastIndexOf("/") + 1);
+        if(COMPONENT_READY_COUNTER.indexOf(componentName) == -1){
+            COMPONENT_READY_COUNTER.push(componentName);
+        }
+    }
+    else if (topic.indexOf("PASSIST/API/ONLINE/") == 0) {
         let apiId = topic.split("/").pop();
         
+    }
+    else if (topic == "PASSIST/PVA/GET_STATUS") {
+        client.publish("PASSIST/PVA/STATUS_" + (COMPONENT_READY_COUNTER.length == 5 ? "OK" : "KO"), "");        
     }
     else if (topic.indexOf("PASSIST/HOTWORD_DETECTOR/EVENT/") == 0) {
         let sessionId = topic.split("/").pop();

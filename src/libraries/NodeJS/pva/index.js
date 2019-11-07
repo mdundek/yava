@@ -4,6 +4,9 @@ var mqtt = require('mqtt');
 let API_SESSION_OBJECT = null;
 let _BORROWED_FLAG = false;
 
+let _INITIAL_PVA_READY = false;
+let _INITIAL_PVA_READY_INTERVAL = null;
+
 /**
  * PrivateVoiceAssistant
  */
@@ -14,15 +17,25 @@ class PrivateVoiceAssistant {
         this.client = mqtt.connect('mqtt://' + this.host);
 
         this.client.on('connect',  () => {
-            // this.client.publish("PASSIST/API/ONLINE/" + this._apiRegisterId, message);
             this.client.subscribe('PASSIST/#');
-            this.connected = true;
-            if(this.callback.onConnect){
-                this.callback.onConnect();
+
+            this.client.publish("PASSIST/PVA/GET_STATUS", "");
+            if(!_INITIAL_PVA_READY_INTERVAL){
+                _INITIAL_PVA_READY_INTERVAL = setInterval(() => {
+                    if(!_INITIAL_PVA_READY)
+                        this.client.publish("PASSIST/PVA/GET_STATUS", "");
+                }, 3000);
             }
         });
 
         this.client.on('offline',  () => {
+            _INITIAL_PVA_READY = false;
+
+            if(_INITIAL_PVA_READY_INTERVAL){
+                clearInterval(_INITIAL_PVA_READY_INTERVAL);
+                _INITIAL_PVA_READY_INTERVAL = null;
+            }
+
             this.connected = false;
             if(this.callback.onDisconnect){
                 this.callback.onDisconnect();
@@ -39,7 +52,16 @@ class PrivateVoiceAssistant {
 
         this.client.on('message', (topic, message) => {
             
-            if (topic.indexOf("PASSIST/API/BRODCAST_INTENT/") == 0) {
+            if (topic == "PASSIST/PVA/STATUS_OK") {
+                this.connected = true;
+                if(!_INITIAL_PVA_READY && this.callback.onConnect){
+                   this.callback.onConnect();
+                   _INITIAL_PVA_READY = true;
+                }
+            } else if (topic == "PASSIST/PVA/STATUS_KO") {
+                this.connected = false;
+            }
+            else if (topic.indexOf("PASSIST/API/BRODCAST_INTENT/") == 0) {
                 
                 if(this.callback.intentEventCallback){
                     let sessionId = topic.split("/").pop();
