@@ -16,7 +16,6 @@ cd $BASE_DIR
 
 PVA_VERSION=$PVA_VERSION ./build_tag.sh $@
 
-PVA_VERSION=$PVA_VERSION ./build_publish.sh capture-speech-arm
 COMPOSE_HTTP_TIMEOUT=300; PVA_VERSION=$PVA_VERSION docker-compose -f ../../docker-compose-prod.yml up -d
 COMPOSE_HTTP_TIMEOUT=300; PVA_VERSION=$PVA_VERSION docker-compose -f ../../docker-compose-prod.yml logs -f
 COMPOSE_HTTP_TIMEOUT=300; PVA_VERSION=$PVA_VERSION docker-compose -f ../../docker-compose-prod.yml down
