@@ -65,8 +65,7 @@ def capture_speech(sessionId, payload):
         #         "ts": datetime.timestamp(datetime.now())
         #     }))
         except Exception as e:
-            if e == "listening timed out while waiting for phrase to start":
-                logger.error("TimeoutException")
+            logger.error(type(e))
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_ERR",
                 "ts": datetime.timestamp(datetime.now())
