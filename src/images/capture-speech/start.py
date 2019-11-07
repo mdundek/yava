@@ -41,7 +41,7 @@ def capture_speech(sessionId, payload):
             audio = r.listen(source, timeout=5, phrase_time_limit=6)
             end_ms = time.time_ns()
 
-            lengthSeconds = (end_ms - start_ms) / 10000000
+            lengthSeconds = (end_ms - start_ms) / 100000000
             logger.info("Duration in seconds ==> " + str(lengthSeconds))
 
             wav_data = audio.get_wav_data()
