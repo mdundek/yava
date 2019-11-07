@@ -37,7 +37,11 @@ def capture_speech(sessionId, payload):
     with sr.Microphone(sample_rate=sample_rate) as source:
         r.adjust_for_ambient_noise(source, duration=0.5)
         try:
-            audio = r.listen(source, timeout=5, phrase_time_limit=20)
+            start_ms = time.time_ns()
+            audio = r.listen(source, timeout=5, phrase_time_limit=10)
+            end_ms = time.time_ns()
+
+            logger.info("Duration in seconds => " + str((end_ms - start_ms) / 1000))
 
             wav_data = audio.get_wav_data()
             if len(wav_data) > 500000:
@@ -50,29 +54,18 @@ def capture_speech(sessionId, payload):
             else:
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
-        # except TimeoutException as e:
-        #     logger.error("TimeoutException thrown:")
-        #     logger.error(e)
-        #     client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-        #         "reason": "AUD_TMO",
-        #         "ts": datetime.timestamp(datetime.now())
-        #     }))
-        # except WaitTimeoutError as e:
-        #     logger.info("WaitTimeoutError thrown:")
-        #     logger.error(e)
-        #     client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-        #         "reason": "AUD_TMO",
-        #         "ts": datetime.timestamp(datetime.now())
-        #     }))
+       
         except Exception as e:
-            logger.error(type(e).__name__)
             if type(e).__name__ == "WaitTimeoutError":
-                logger.error("YEP")
-                
-            client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
-                "reason": "AUD_ERR",
-                "ts": datetime.timestamp(datetime.now())
-            }))
+                client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                    "reason": "AUD_TMO",
+                    "ts": datetime.timestamp(datetime.now())
+                }))
+            else:
+                client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                    "reason": "AUD_ERR",
+                    "ts": datetime.timestamp(datetime.now())
+                }))
 
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
