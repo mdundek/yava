@@ -32,26 +32,26 @@ r = sr.Recognizer()
 r.dynamic_energy_threshold = True
 MQTT_CONNECTED = False
 
+MAX_PHRASE_LIMIT_SEC = 20
+MAX_PHRASE_LIMIT_MS = MAX_PHRASE_LIMIT_SEC * 1000
+
 def capture_speech(sessionId, payload):
     with sr.Microphone(sample_rate=sample_rate) as source:
         r.adjust_for_ambient_noise(source, duration=0.5)
         try:
             start_ms = time.time_ns()
-            audio = r.listen(source, timeout=5, phrase_time_limit=20)
+            audio = r.listen(source, timeout=5, phrase_time_limit=MAX_PHRASE_LIMIT_SEC)
             end_ms = time.time_ns()
 
             duration_ms = (end_ms - start_ms) / 1000000
-            logger.info("Duration in ms ==> " + str(duration_ms))
 
-            wav_data = audio.get_wav_data()
-            if len(wav_data) > 500000:
-                logger.info("Audio length is too big, please make shorter sentances")
-
+            if duration_ms >= MAX_PHRASE_LIMIT_MS:
                 client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                     "reason": "AUD_MAX",
                     "ts": datetime.timestamp(datetime.now())
                 }))
             else:
+                wav_data = audio.get_wav_data()
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
        
