@@ -143,7 +143,6 @@ def start_hw_detector():
     # delete Porcupine last to avoid segfault in callback.
     if porcupine is not None:
         porcupine.delete()
-    client.publish("PASSIST/HOTWORD_DETECTOR/STOP_DONE", "")
 
 def stop_hw_detector():
     global DETECTOR_RUNNING
