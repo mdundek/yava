@@ -38,10 +38,11 @@ def capture_speech(sessionId, payload):
         r.adjust_for_ambient_noise(source, duration=0.5)
         try:
             start_ms = time.time_ns()
-            audio = r.listen(source, timeout=5, phrase_time_limit=10)
+            audio = r.listen(source, timeout=5, phrase_time_limit=6)
             end_ms = time.time_ns()
 
-            logger.info("Duration in seconds => " + str((end_ms - start_ms) / 10000000))
+            lengthSeconds = (end_ms - start_ms) / 10000000
+            logger.info("Duration in seconds ==> " + str(lengthSeconds)
 
             wav_data = audio.get_wav_data()
             if len(wav_data) > 500000:
