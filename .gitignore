@@ -1,6 +1,4 @@
 resources/nlu/training_data/train.yaml
-src/images/build_publish.sh
-src/images/pull_0_9_arm.sh
 **/node_modules
 **/package-lock.json
 **/.AppleDouble/
