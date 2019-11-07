@@ -53,19 +53,19 @@ def capture_speech(sessionId, payload):
                 client.publish(
                     "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
         except TimeoutException:
-            logger.error(e)
+            logger.info("TimeoutException")
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_TMO",
                 "ts": datetime.timestamp(datetime.now())
             }))
         except WaitTimeoutError:
-            logger.error(e)
+            logger.info("WaitTimeoutError")
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_TMO",
                 "ts": datetime.timestamp(datetime.now())
             }))
         except Exception as e:
-            logger.error(e)
+            logger.info(e)
             client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
                 "reason": "AUD_ERR",
                 "ts": datetime.timestamp(datetime.now())
