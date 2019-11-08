@@ -137,7 +137,7 @@ YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
 
 ## Use the client libraries<a name="clientlib"></a>
 
-> There are some code samples in the folder `examples/`.
+Dont hesitate to check out some code samples in the folder `examples/`.
 
 ### NodeJS library<a name="libnode"></a>
 
