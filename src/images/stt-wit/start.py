@@ -61,7 +61,7 @@ def on_message(client, userdata, msg):
         try:
             recog = r.recognize_wit(
                 audio, key=WIT_KEY)
-            logger.info(recog)
+            
             client.publish(
                 "YAVA/"+PROCESS_TOPIC+"/PROCESS_DONE/"+sessionId, recog)
         except sr.UnknownValueError:

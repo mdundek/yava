@@ -154,6 +154,7 @@ speechCaptureDone = (sessionId, payload) => {
  */
 speechToTextDone = (sessionId, payload) => {
     if(SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
+        console.log(JSON.stringify(payload, null, 4))
         client.publish("YAVA/NLP/MATCH/" + sessionId, JSON.stringify({ text: payload, ts: new Date().getTime() }));
     } else {
         if(SESSIONS[sessionId]){
