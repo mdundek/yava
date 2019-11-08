@@ -21,26 +21,27 @@ PrivateVoiceAssistant.onDisconnect(() => {
  * that can be used to interact with PVA
  */
 PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
-    (async() => {
-		try{
-			console.log(JSON.stringify(assistantSession.data, null, 4))
-			switch(assistantSession.data.intent.intent){
-				case "send_email":
-					// Do whatever you need to...
-					break
-				case "send_message":
-					// Do whatever you need to...
-					break
-					
-			}
-		} catch(err){
-			console.log("ERROR => ", err);            
-		} finally{
-			// Release the assistant session
-			assistantSession.done();
-		}
-    })();
+	// Intent & entities are available from 'assistantSession.data'. Ex:
+	//
+	// {
+	// 	  "intent": "send_email",
+	// 	  "confidence": 1,
+	// 	  "entities": [
+	// 		  {
+	// 		  	  "start": 17,
+	// 			  "end": 21,
+	// 			  "len": 5,
+	// 			  "levenshtein": 0,
+	// 			  "accuracy": 1,
+	// 			  "option": "becky",
+	// 			  "sourceText": "Becky",
+	// 			  "entity": "CONTACT",
+	// 			  "utteranceText": "becky"
+	// 		  }
+	// 	  ],
+	// 	  "utterance": "send an email to becky"
+	// }
 });
 
 // Now connect
-PrivateVoiceAssistant.connect("192.168.1.42");
+PrivateVoiceAssistant.connect("<PVA HOST IP>");

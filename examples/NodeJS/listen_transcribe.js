@@ -22,51 +22,42 @@ PrivateVoiceAssistant.onDisconnect(() => {
  */
 PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
     (async() => {
-      try{
-          switch(assistantSession.data.intent){
-              case "send_email":
-                  // Ask user to who this email should be send to
-                  await assistantSession.speekOut("To whom");
+        try{
+            switch(assistantSession.data.intent){
+                case "send_email":
+                    
+                    // Make sure you got the entity representing the recipient along side with the intent, 
+                    // otherwise you have to ask the user for it first
+                    // ...
 
-                  // Get user response, without having NLU determine an intent
-                  let targetPersonResponse = await assistantSession.listenAndTranscribe();
+                    // Speak out to the user
+                    await assistantSession.speekOut("What would you like the email to say");
 
-                  console.log(targetPersonResponse)
-                  // Do whatever you need to do with the user response text, 
-                  // in this case probably look up the user email address
-                //   let contact = "michael"
+                    let totalMessage = "";
+                    while(true){
+                        // Get the user command as transcribed text rather than having the NLU engine process it first
+                        let emailMessagePart = await assistantSession.listenAndTranscribe(); 
+                        if(emailMessage == "done"){
+                            // you could also use the method 'listenAndMatchIntent()' for a more robust approach, 
+                            // if you trained your NLU model to recognize the "I am done" type of intent
+                            break;
+                        } else{
+                            totalMessage += "\n" + emailMessage
+                            await assistantSession.speekOut("Anything else you wanna say? Say done when you are finished");
+                        }
+                    }
 
-                //   if(!contact){
-                //       await assistantSession.speekOut("I don't know that person, sorry");
-                //   } 
-                //   else {
-                //       await assistantSession.speekOut("What do you want your message to say");
+                    console.log("Message is: ", totalMessage);
 
-                //       // Itterate and ask user to dictate what he would like to say, 
-                //       // until the user says the word "done"
-                //       let totalMessage = "";
-                //       while(true){
-                //           let emailMessage = await assistantSession.listenAndTranscribe();
-                //           if(emailMessage == "done"){
-                //               break;
-                //           } else{
-                //               totalMessage += "\n" + emailMessage
-                //               await assistantSession.speekOut("Anything else you wanna say? Say done when you are finished");
-                //           }
-                //       }
-
-                //       // Now send the email to the target user...
-                //       console.log(totalMessage);
-                //   }
-
-                  break
-          }
-      } catch(err){
-          console.log("ERROR => ", err);            
-      } finally{
-          // Release the assistant session
-          assistantSession.done();
-      }
+                    // Now send out your email...
+                    break;
+            }
+        } catch(err){
+            console.log("ERROR => ", err);            
+        } finally{
+            // Release the assistant session
+            assistantSession.done();
+        }
     })();
 });
 

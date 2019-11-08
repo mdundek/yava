@@ -62,3 +62,10 @@ You see, there are alot of situations where you need flexibility of the solution
 ## What's next
 
 This project is fairly recent, and should be considered as work in progress. 
+
+__Work in progress:__ 
+
+- Automated mandatory entity slot filling
+- Python & Java client libraries
+- Add Espeak & Google TTS containers as supplement TTS engines
+- Write documentation on how to extend and build new images for PVA

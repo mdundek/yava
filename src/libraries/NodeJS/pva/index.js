@@ -238,10 +238,10 @@ class APISession {
             if(opt && opt.stt_alt === true)
                 API_SESSION_OBJECT.stt_alt = true;
 
-                if(!_BORROWED_FLAG){
-                    this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
-                    _BORROWED_FLAG = true;
-                }
+            if(!_BORROWED_FLAG){
+                this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                _BORROWED_FLAG = true;
+            }
             this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
         });
     }
@@ -262,10 +262,11 @@ class APISession {
             };
             if(opt && opt.stt_alt === true)
                 API_SESSION_OBJECT.stt_alt = true;
-                if(!_BORROWED_FLAG){
-                    this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
-                    _BORROWED_FLAG = true;
-                }
+                
+            if(!_BORROWED_FLAG){
+                this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                _BORROWED_FLAG = true;
+            }
             this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
         });
     }

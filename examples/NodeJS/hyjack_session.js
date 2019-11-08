@@ -5,8 +5,16 @@ let PrivateVoiceAssistant = require("../../src/libraries/NodeJS/pva/index");
  */
 PrivateVoiceAssistant.onConnect(() => {
     console.log("=> Connected");
+    
+    (async() => {
+        let assistantSession = await PrivateVoiceAssistant.hijackSession();
 
-    let assistantSession = await PrivateVoiceAssistant.hijackSession();
+        // Now use the assistantSession object to interact with PVA...
+
+        // Release the assistant session
+        assistantSession.done();
+    })();
+    
 });
 
 /**
