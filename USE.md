@@ -7,9 +7,12 @@
   * [Train model for NLU Light](#nlulighttrain)  
   * [Train model for NLU Spacy](#nluspacytrain)  
 * [Start the voice assistant](#startassistant)  
+* [Get the message bus logs](#logsassistant)  
+* [Stop the voice assistant](#stopassistant)  
 * [Use the client libraries](#clientlib)  
-  * [NodeJS](#libnode)  
-  * [Python](#libpy)  
+  * [NodeJS library](#libnode)  
+  * [Python library](#libpy)
+  * [Java library](#libjava)  
 
 
 ## Train your NLU model<a name="train"></a>
@@ -18,7 +21,9 @@
 
 First, you need to create your NLU training data. There is a sample training data file that you can get inspiration from here: `resources/nlu/training_data/training_example.yaml`.
 
-Example `training.yaml` file:
+For your specific use case, create a new training file in that same directory and call is something like `my_training_example.yaml` file.  
+
+As an example, have a look at the following training configuration:
 
 ```yaml
 training:
@@ -48,19 +53,21 @@ training:
       - "{SEND_PREFIX} [CONTACT] a message"
 ```
 
-__placeholders__: Can be used to generate training sets with placeholders. Rather than creating one example utterance for each variant of a sentance sub section, list those variants in a named placeholder node and reference it in your training utterance. Placeholders are injected by using `{...}` syntax.
+__Some explanations:__  
 
-__entities__: Just like placeholders, but for Entities you would like to detect in your text. Entities are injected by using `[...]` syntax.
+__placeholders__: Can be used to generate training sets using placeholders. When being trained later on, the NLU component will expand those examples and generate training sets with all possible permutations. List those variants in a named `placeholder` node and reference it in your training utterance. Placeholders are specified by using the `{...}` syntax.
+
+__entities__: Just like placeholders, but for Entities you would like to detect in your text. Entities are specified by using the `[...]` syntax. By default, the NER engine will also extract common entities such as `dates`, `numbers`, `currencies` etc . You do not need to ask for those explicitely.
 
 __intents__: List your intents here, and provide samples utterances that a user might ask. Tag the Entities in those utterances to train the engine so that it can recognize them.
 
----
 
-To train your model, you will have to use the appropriate docker image. Please read on for more details.
 
 ### Train model for NLU Light<a name="nlulighttrain"></a>
 
-Once you have finished your training set definitions, run the following command from the root of this repository:  
+To train your model, you will have to use the appropriate docker image. In this case, the image would be `md76/yava-nlu-light:0.9.1-arm` if training on a Raspberry Pi, or the image `md76/yava-nlu-light:0.9.1` if training on a AMD64 based machine. NLU light is fast enougth to train on the Raspberry Pi directly, so I would just stick to the first variant for simplicity. 
+
+Once you have finished your training set definitions, run the following command from the root of this repository to train your model:  
 
 ```shell
 docker run --rm \
@@ -70,11 +77,14 @@ docker run --rm \
   python train.py
 ```
 
-Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
+Adjust the image tag name if you are not on a Raspberry Pi, and replace `<YOUR TRAINING YAML FILE>` with the name of your training yaml file.  
+
 Once the training is done, you will see a new file in the folder `resources/nlu/models/intents/model.nlp`.
 
 
 ### Train model for NLU Spacy<a name="nluspacytrain"></a>
+
+To train your model, you will have to use the appropriate docker image. In this case, the image would be `md76/yava-nlu-spacy:0.9.1-en-sm-arm` or `md76/yava-nlu-spacy:0.9.1-en-md-arm` if training on a Raspberry Pi (be aware that this will take a long time), or the image `md76/yava-nlu-spacy:0.9.1-en-sm` or `md76/yava-nlu-spacy:0.9.1-en-md` if training on a AMD64 based machine. The last two options are recommended if you want to have an acceptable training duration.  
 
 Once you have finished your training set definitions, run the following command from the root of this repository:  
 
@@ -86,35 +96,40 @@ docker run --rm \
   python train.py
 ```
 
-Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
+Adjust the image tag name if you are not on a Raspberry Pi and according to the base model you wish to use, and replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.  
+
 Once the training is done, you will see a new files in the folder `resources/nlu/models/intents/`, as well as spacy entity models in the folder `resources/nlu/models/entities/`.
 
-> WARNING: Spacy takes a long time to train your model, especially on a Raspberry Pi 2/3. This might be a bit better on a Raspberry Pi 4 (again, to be tested).
-> You can also use a more powerfull machine to train your model, and then move the model over to your Raspberry Pi in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/` accordingly.  
-> To do so, use the docker image tag `0.9-en-sm` rather than `0.9-en-sm-arm`.
-
+> INFO: If you trained your model on a different machine than the one running YAVA, then remember to move the model over to your Raspberry Pi, respectively in the folders `resources/nlu/models/intents/` and `resources/nlu/models/entities/`. For this, I use the `scp` command from my Mac, that looks like this:
+>
+>```shell
+>scp -r files/nlu/models/entities/* <SSH USER OF TARGET HOST>@<IP OF THE TARGET HOST>:/home/pi/workspaces/yava/files/nlu/models/entities
+>```
+>_
 
 ## Start the voice assistant<a name="startassistant"></a>
 
-> IMPORTANT: Make sure you configured the various components according to the above section, and train your NLU model before you start the solution.
+> IMPORTANT: Make sure you configured the various components, and train your NLU model before you proceed.
 
-To run the voice assistant, simply execute the following command from the repository root directory:
+To run the voice assistant, simply execute the following command from the root of this repository:
 
 ```shell
 COMPOSE_HTTP_TIMEOUT=300 YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> up -d
 ```
 
-> If you run the assistant for the first time, then docker will have to download all required images first. Be patient, this might take a while depending on your connection speed (Raspberries tend to be slower, except for the RPi 4 due to it's revised bus architecture). 
+> If you run the assistant for the first time, then docker will have to download all required images first. Be patient, this might take a while depending on your connection speed (Rasberries tend to be slower, except for the RPi 4 due to it's revised bus architecture). 
 
 This will also restart the assistant automatically on reboot, untill you explicitly did a `docker-compose down`
 
-To see the broker logs once started (ex. for debugging):
+## Get the message bus logs<a name="logsassistant"></a>
+
+To see the broker logs once started (ex. for debugging), run the following command:
 
 ```shell
 YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> logs -f
 ```
 
-To stop the assistant:
+## Stop the voice assistant<a name="stopassistant"></a>
 
 ```shell
 YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
@@ -122,9 +137,11 @@ YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
 
 ## Use the client libraries<a name="clientlib"></a>
 
-### NodeJS<a name="libnode"></a>
+> There are some code samples in the folder `examples/`.
 
-For now, the client library is not available on NPM. this will change soon wonce I get the time to do so.  
+### NodeJS library<a name="libnode"></a>
+
+> For now, the client library is not available through NPM. This will change soon once I get the time to make it available.  
 In the meanwhile, simply copy the folder `src/libraries/NodeJS/yava` to your NodeJS project.  
 
 Require the client library and connect to the YAVA host:
@@ -157,57 +174,14 @@ Yava.onDisconnect(() => {
  * that can be used to interact with YAVA
  */
 Yava.onInitialIntent((assistantSession) => {
-    (async() => {
-      try{
-          switch(assistantSession.data.intent){
-              case "send_email":
-                  // Ask user to who this email should be send to
-                  await assistantSession.speekOut("To whom would you like to send this email to exactly");
-
-                  // Get user response, without having NLU determine an intent
-                  let targetPersonResponse = await assistantSession.listenAndTranscribe();
-
-                  // Do whatever you need to do with the user response text, 
-                  // in this case probably look up the user email address
-                  let contact = ...
-
-                  if(!contact){
-                      await assistantSession.speekOut("I don't know that person, sorry");
-                  } 
-                  else {
-                      await assistantSession.speekOut("What do you want your message to say");
-
-                      // Itterate and ask user to dictate what he would like to say, 
-                      // until the user says the word "done"
-                      let totalMessage = "";
-                      while(true){
-                          let emailMessage = await assistantSession.listenAndTranscribe();
-                          if(emailMessage == "done"){
-                              break;
-                          } else{
-                              totalMessage += "\n" + emailMessage
-                              await assistantSession.speekOut("Anything else you wanna say? Say done when you are finished");
-                          }
-                      }
-
-                      // Now send the email to the target user...
-                  }
-                  break
-          }
-      } catch(err){
-          console.log("ERROR => ", err);            
-      } finally{
-          // Release the assistant session
-          assistantSession.done();
-      }
-    })();
+    
 });
 
 // Now connect
 Yava.connect("<IP OF HOST THAT RUNS YAVA>");
 ```
 
-Other methods for the __assistantSession__ object:
+Methods available on the __assistantSession__ object:
 
 ```node
 // Listen to the user, and run NLU intent & entity recognition on the command
@@ -224,10 +198,9 @@ let text = await assistantSession.listenAndTranscribe(opt)
 assistantSession.speekOut(text)
 ```
 
-If you want to initiate a new assistant session manually, you can do so using the `hijackSession` function of the `voiceAssistant` instance:
+If you want to initiate a new assistant session manually, you can do so using the `hijackSession` function of the `Yava` object:
 
 ```node
-
 if(Yava.connected){
     try{
         let assistantSession = await Yava.hijackSession();
@@ -244,14 +217,13 @@ if(Yava.connected){
 }
 ```
 
-> IMPORTANT: YAVA is not designed to be a multi tenant voice assistant. Use the library syncroniously, one session at a time.
+> IMPORTANT: YAVA is not designed to be a multi-tenant voice assistant. Use the library syncroniously, one session at a time.
 
 
-### Python<a name="libpy"></a>
+### Python library<a name="libpy"></a>
 
+Under construction
 
-docker run --rm \
-  -v $PWD/resources/nlu/models:/usr/src/app/models \
-  -v $PWD/resources/nlu/training_data/train.yaml:/usr/src/app/training_data/train.yaml \
-  md76/yava-nlu-light:0.9-arm \
-  python train.py
+### Java library<a name="libjava"></a>
+
+Under construction

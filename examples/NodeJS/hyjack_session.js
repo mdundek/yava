@@ -26,4 +26,4 @@ Yava.onDisconnect(() => {
 });
 
 // Now connect
-Yava.connect("192.168.1.42");
+Yava.connect("<YAVA HOST IP>");
