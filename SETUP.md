@@ -36,13 +36,13 @@ Before you can go ahead and start up the assistant, you will have to prepare and
 
 ## Prepare your configuration files<a name="prepare"></a>
 
-There are two places where you will have to set things up for you:  
+There are two places where you will have to set things up:  
 
-1. Configuring components to select which once to use is done directly in the `docker-compose.yml` file. I would recommend duplicating the template `docker-compose.yml` file and name it to something like `my-docker-compose.yml`. When you start the solution later non, you will simply have to point docker-compose to your specific file rather than using the default one (more on this [here](./USE.md#startassistant)).
+1. Configuring components and select which once to use (which TTS engine, which NLU implementation...) is done directly in the `docker-compose.yml` file. I would recommend duplicating the template `docker-compose.yml` file and name it to something like `my-docker-compose.yml`. When you start the solution later non, you will simply have to point docker-compose to your specific file rather than using the default one (more on this [here](./USE.md#startassistant)).
   
 2. To set up files required by the various components, such as API keys, certificates, language models... is done in the `resources` folder at the root of this repository
 
-I will document how to set things up for each docker image available below.
+I will document how to set things up for each docker image below.
 
 ## 1. Hotword detector<a name="hotword"></a>
 
@@ -55,8 +55,8 @@ Choose one of the two that you would like to use in your project, and configure 
 
 ### Configure Snowboy<a name="snowboy"></a>
 
-Grab a hotword model if you don't want to use the default one (Hey Alice). To do so, download a public hotword from the [Snowboy](https://snowboy.kitt.ai/), or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
-Attention, only one hotword file can be used at a given time. So if you download your own hotword file, please make sure to reference it in the `(my-)docker-compose.yml` file under the component `yava-hotword`, specific to Snowboy.
+Grab a hotword model if you don't want to use the default one (Hey Alice). To do so, download a public hotword from [Snowboy](https://snowboy.kitt.ai/), or generate your own private hotword on their website. Download the hotword file to the folder `resources/snowboy/models`. By default, there is a model file in this folder called `Hotword.pmdl`, that is trained for the trigger phrase `Hey Alice`.  
+Attention, only one hotword file can be used at a given time. So if you download your own hotword file, please make sure to reference it in the `(my-)docker-compose.yml` file under the component `yava-hotword`, that is specific to Snowboy.
 
 > IMPORTANT: If you are planning to commercialize your solution, you will need to get a license from the Snowboy team.
 
@@ -119,7 +119,7 @@ Update the environement variable `SYSTEM_HOTWORDS` according to your needs, base
 
 You do not need to configure this one, it should work as intended out of the box.  
 
-That said, there is one environement variable you can set in the `(my-)docker-compose.yml` file called `MAX_PHRASE_LIMIT_SEC`. This represents the maximum length in seconds that a spoken sentance can be recorded for (default is 20 seconds). You can always extend this value if necessary.
+That said, there is one environement variable you can set in the `(my-)docker-compose.yml` file called `MAX_PHRASE_LIMIT_SEC`. This represents the maximum length in seconds that a spoken sentance can be recorded for (default is 20 seconds). You can always change this value if necessary.
 
 ## 3. Speech to text<a name="stt"></a>
 
