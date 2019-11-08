@@ -71,5 +71,6 @@ __Work in progress:__
 - Add support for other languages than English
 - Automated mandatory entity slot filling
 - Python & Java client libraries
+- Add client library function to query the NLU engine with provided text programatically rather than capturing from the microphone
 - Add Espeak & Google TTS images as alternatives for the TTS engines
 - Write documentation on how to extend and build new images for the YAVA platform
