@@ -10,6 +10,7 @@ Yava.onConnect(() => {
         let assistantSession = await Yava.hijackSession();
 
         // Now use the assistantSession object to interact with YAVA...
+        await assistantSession.speekOut("I just hijacked this session");
 
         // Release the assistant session
         assistantSession.done();

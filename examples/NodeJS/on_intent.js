@@ -41,7 +41,9 @@ Yava.onInitialIntent((assistantSession) => {
 	// 	  ],
 	// 	  "utterance": "send an email to becky"
 	// }
+
+	assistantSession.done();
 });
 
 // Now connect
-Yava.connect("<YAVA HOST IP>");
+Yava.connect("192.168.1.42");

@@ -2,7 +2,6 @@ const mqtt = require('mqtt');
 
 const client = mqtt.connect('mqtt://yava-mosquitto');
 const shortid = require('shortid');
-
 let SESSIONS = {};
 let _BORROWED = false;
 let COMPONENT_READY_COUNTER = [];
@@ -27,10 +26,6 @@ client.on('message', function (topic, message) {
         if(COMPONENT_READY_COUNTER.indexOf(componentName) == -1){
             COMPONENT_READY_COUNTER.push(componentName);
         }
-    }
-    else if (topic.indexOf("YAVA/API/ONLINE/") == 0) {
-        let apiId = topic.split("/").pop();
-        
     }
     else if (topic == "YAVA/YAVA/GET_STATUS") {
         client.publish("YAVA/YAVA/STATUS_" + (COMPONENT_READY_COUNTER.length == 5 ? "OK" : "KO"), "");        
@@ -60,9 +55,14 @@ client.on('message', function (topic, message) {
         if(_BORROWED){
             client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_BUS", "ts": new Date().getTime() }));
         } else {
-            _BORROWED = true;
-            SESSIONS[sessionId].owner = "API";
-            _extendSessionTimeout(sessionId);
+            if(SESSIONS[sessionId]){
+                _BORROWED = true;
+                SESSIONS[sessionId].owner = "API";
+                _extendSessionTimeout(sessionId);
+            } 
+            // else {
+            //     client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_EXP", "ts": new Date().getTime() }));
+            // }
         }
     }
     else if (topic == "YAVA/API/HIJACK_SESSION") {
@@ -93,9 +93,10 @@ client.on('message', function (topic, message) {
                 clearTimeout(SESSIONS[sessionId].inactiveTimeout);
             }
             delete SESSIONS[sessionId];
+        
+            _BORROWED = false;
+            client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
         }
-        _BORROWED = false;
-        client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     }
     else if (topic.indexOf("YAVA/ERROR/") == 0) {
         let sessionId = topic.split("/").pop();
@@ -136,10 +137,15 @@ hotwordDetected = (sessionId) => {
  * speechCaptureDone
  */
 speechCaptureDone = (sessionId, payload) => {
-    if(SESSIONS[sessionId].owner == "HOTWORD"){
+    if(SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
         client.publish("YAVA/STT/PROCESS/" + sessionId, payload);
     } else {
-        _extendSessionTimeout(sessionId);
+        if(SESSIONS[sessionId]){
+            _extendSessionTimeout(sessionId);
+        } 
+        // else {
+        //     client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_EXP", "ts": new Date().getTime() }));
+        // }
     }
 }
 
@@ -147,10 +153,15 @@ speechCaptureDone = (sessionId, payload) => {
  * speechToTextDone
  */
 speechToTextDone = (sessionId, payload) => {
-    if(SESSIONS[sessionId].owner == "HOTWORD"){
+    if(SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
         client.publish("YAVA/NLP/MATCH/" + sessionId, JSON.stringify({ text: payload, ts: new Date().getTime() }));
     } else {
-        _extendSessionTimeout(sessionId);
+        if(SESSIONS[sessionId]){
+            _extendSessionTimeout(sessionId);
+        } 
+        // else {
+        //     client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_EXP", "ts": new Date().getTime() }));
+        // }
     }
 }
 
@@ -158,7 +169,7 @@ speechToTextDone = (sessionId, payload) => {
  * onNlpDone
  */
 onNlpDone = (sessionId, payload) => {
-    if(SESSIONS[sessionId].owner == "HOTWORD"){
+    if(SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
         console.log(JSON.stringify(payload, null, 4))
         if(payload.intent.length == 0){
             client.publish("YAVA/TTS/SAY/" + sessionId, JSON.stringify({ text: "Sorry, but I did not understand you.", ts: new Date().getTime() }));
@@ -171,7 +182,12 @@ onNlpDone = (sessionId, payload) => {
             }.bind(this, sessionId), 10000);
         }
     } else {
-        _extendSessionTimeout(sessionId);
+        if(SESSIONS[sessionId]){
+            _extendSessionTimeout(sessionId);
+        } 
+        // else {
+        //     client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_EXP", "ts": new Date().getTime() }));
+        // }
     }
 }
 
@@ -179,11 +195,16 @@ onNlpDone = (sessionId, payload) => {
  * textToSpeechDone
  */
 textToSpeechDone = (sessionId) => {
-    if(SESSIONS[sessionId].owner == "HOTWORD"){
+    if(SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
         delete SESSIONS[sessionId];
         client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     } else {
-        _extendSessionTimeout(sessionId);
+        if(SESSIONS[sessionId]){
+            _extendSessionTimeout(sessionId);
+        } 
+        // else {
+        //     client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_EXP", "ts": new Date().getTime() }));
+        // }
     }
 }
 
@@ -191,8 +212,7 @@ textToSpeechDone = (sessionId) => {
  * onSessionError
  */
 onSessionError = (sessionId, payload) => {
-    if(sessionId != "NULL" && SESSIONS[sessionId].owner == "HOTWORD"){
-
+    if(sessionId != "NULL" && SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
         let errMessage;
         switch(payload.reason) {
             case "AUD_MAX":
@@ -213,9 +233,8 @@ onSessionError = (sessionId, payload) => {
             default:
                 errMessage = "There was an error, please try again.";
         }
-
         client.publish("YAVA/TTS/SAY/" + sessionId, JSON.stringify({ text: errMessage, ts: new Date().getTime() }));
-    } else {
+    } else if(SESSIONS[sessionId]){
         _extendSessionTimeout(sessionId);
     }
 }
@@ -229,6 +248,7 @@ onSessionExpiration = (sessionId) => {
         client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     } else {
         _BORROWED = false;
+        
         delete SESSIONS[sessionId];
         client.publish("YAVA/API/TIMEOUT/" + sessionId, JSON.stringify({ "ts": new Date().getTime(), "reason": "SES_TIO" }));
         client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ "ts": new Date().getTime() }));

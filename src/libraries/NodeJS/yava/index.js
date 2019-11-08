@@ -140,9 +140,9 @@ class Yava {
             } else if (topic.indexOf("YAVA/API/TIMEOUT/") == 0) {
                 let sessionId = topic.split("/").pop();
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.sessionId == sessionId){
-                    let _next = API_SESSION_OBJECT.next;
+                    let _err = API_SESSION_OBJECT.err;
                     API_SESSION_OBJECT = null;
-                    _next(null);
+                    _err(null);
                 }
             }    
         });

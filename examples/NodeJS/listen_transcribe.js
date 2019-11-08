@@ -37,12 +37,12 @@ Yava.onInitialIntent((assistantSession) => {
                     while(true){
                         // Get the user command as transcribed text rather than having the NLU engine process it first
                         let emailMessagePart = await assistantSession.listenAndTranscribe(); 
-                        if(emailMessage == "done"){
+                        if(emailMessagePart == "done"){
                             // you could also use the method 'listenAndMatchIntent()' for a more robust approach, 
                             // if you trained your NLU model to recognize the "I am done" type of intent
                             break;
                         } else{
-                            totalMessage += "\n" + emailMessage
+                            totalMessage += "\n" + emailMessagePart
                             await assistantSession.speekOut("Anything else you wanna say? Say done when you are finished");
                         }
                     }
