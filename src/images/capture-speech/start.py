@@ -52,23 +52,23 @@ def capture_speech(sessionId, payload):
             duration_ms = (end_ms - start_ms) / 1000000
 
             if duration_ms >= MAX_PHRASE_LIMIT_MS:
-                client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                client.publish("YAVA/ERROR/" + sessionId, json.dumps({
                     "reason": "AUD_MAX",
                     "ts": datetime.timestamp(datetime.now())
                 }))
             else:
                 wav_data = audio.get_wav_data()
                 client.publish(
-                    "PASSIST/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
+                    "YAVA/RECORD_SPEECH/CAPTURED/" + sessionId, wav_data)
        
         except Exception as e:
             if type(e).__name__ == "WaitTimeoutError":
-                client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                client.publish("YAVA/ERROR/" + sessionId, json.dumps({
                     "reason": "AUD_TMO",
                     "ts": datetime.timestamp(datetime.now())
                 }))
             else:
-                client.publish("PASSIST/ERROR/" + sessionId, json.dumps({
+                client.publish("YAVA/ERROR/" + sessionId, json.dumps({
                     "reason": "AUD_ERR",
                     "ts": datetime.timestamp(datetime.now())
                 }))
@@ -76,7 +76,7 @@ def capture_speech(sessionId, payload):
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
 
-    client.subscribe("PASSIST/RECORD_SPEECH/START/+")
+    client.subscribe("YAVA/RECORD_SPEECH/START/+")
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
@@ -84,7 +84,7 @@ def on_connect(client, userdata, flags, rc):
     global firstConnect
     if firstConnect is False:
         firstConnect = True
-        client.publish("PASSIST/RECORD_SPEECH/READY", "")
+        client.publish("YAVA/RECORD_SPEECH/READY", "")
 
 
 def on_disconnect(client, userdata, rc):
@@ -94,7 +94,7 @@ def on_disconnect(client, userdata, rc):
     MQTT_CONNECTED = False
 
 def on_message(client, userdata, msg):
-    if msg.topic.startswith("PASSIST/RECORD_SPEECH/START/") == True:
+    if msg.topic.startswith("YAVA/RECORD_SPEECH/START/") == True:
         sessionId = msg.topic.split("/").pop()
         
         m_decode = str(msg.payload.decode("utf-8", "ignore"))
@@ -107,7 +107,7 @@ with noalsaerr():
     client.on_message = on_message
     client.on_disconnect = on_disconnect
 
-    client.connect("pva-mosquitto", 1883, 60)
+    client.connect("yava-mosquitto", 1883, 60)
 
     logger.info("MQTT Connecting...")
 

@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 
-const client = mqtt.connect('mqtt://pva-mosquitto');
+const client = mqtt.connect('mqtt://yava-mosquitto');
 const shortid = require('shortid');
 
 let SESSIONS = {};
@@ -14,7 +14,7 @@ if(process.env.API_SESSION_TIMEOUT){
 
 client.on('connect', function () {
     console.log("INFO:ORCHESTRATOR=>:MQTT Orchestrator connected");
-    client.subscribe('PASSIST/#');
+    client.subscribe('YAVA/#');
 
 });
 
@@ -28,53 +28,53 @@ client.on('message', function (topic, message) {
             COMPONENT_READY_COUNTER.push(componentName);
         }
     }
-    else if (topic.indexOf("PASSIST/API/ONLINE/") == 0) {
+    else if (topic.indexOf("YAVA/API/ONLINE/") == 0) {
         let apiId = topic.split("/").pop();
         
     }
-    else if (topic == "PASSIST/PVA/GET_STATUS") {
-        client.publish("PASSIST/PVA/STATUS_" + (COMPONENT_READY_COUNTER.length == 5 ? "OK" : "KO"), "");        
+    else if (topic == "YAVA/YAVA/GET_STATUS") {
+        client.publish("YAVA/YAVA/STATUS_" + (COMPONENT_READY_COUNTER.length == 5 ? "OK" : "KO"), "");        
     }
-    else if (topic.indexOf("PASSIST/HOTWORD_DETECTOR/EVENT/") == 0) {
+    else if (topic.indexOf("YAVA/HOTWORD_DETECTOR/EVENT/") == 0) {
         let sessionId = topic.split("/").pop();
         hotwordDetected(sessionId);
     }
-    else if (topic.indexOf("PASSIST/RECORD_SPEECH/CAPTURED/") == 0) {
+    else if (topic.indexOf("YAVA/RECORD_SPEECH/CAPTURED/") == 0) {
         let sessionId = topic.split("/").pop();
         speechCaptureDone(sessionId, message);
     }
-    else if (topic.indexOf("PASSIST/STT/PROCESS_DONE/") == 0 || topic.indexOf("PASSIST/STT_ALT/PROCESS_DONE/") == 0) {
+    else if (topic.indexOf("YAVA/STT/PROCESS_DONE/") == 0 || topic.indexOf("YAVA/STT_ALT/PROCESS_DONE/") == 0) {
         let sessionId = topic.split("/").pop();
         speechToTextDone(sessionId, message.toString("UTF-8"));
     }
-    else if (topic.indexOf("PASSIST/NLP/MATCH_DONE/") == 0) {
+    else if (topic.indexOf("YAVA/NLP/MATCH_DONE/") == 0) {
         let sessionId = topic.split("/").pop();
         onNlpDone(sessionId, JSON.parse(message.toString("UTF-8")));
     }
-    else if (topic.indexOf("PASSIST/TTS/SAY_DONE/") == 0) {
+    else if (topic.indexOf("YAVA/TTS/SAY_DONE/") == 0) {
         let sessionId = topic.split("/").pop();
         textToSpeechDone(sessionId);
     }
-    else if (topic.indexOf("PASSIST/API/BORROW_SESSION/") == 0) {
+    else if (topic.indexOf("YAVA/API/BORROW_SESSION/") == 0) {
         let sessionId = topic.split("/").pop();
         if(_BORROWED){
-            client.publish("PASSIST/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_BUS", "ts": new Date().getTime() }));
+            client.publish("YAVA/ERROR/" + sessionId, JSON.stringify({ "reason": "SES_BUS", "ts": new Date().getTime() }));
         } else {
             _BORROWED = true;
             SESSIONS[sessionId].owner = "API";
             _extendSessionTimeout(sessionId);
         }
     }
-    else if (topic == "PASSIST/API/HIJACK_SESSION") {
+    else if (topic == "YAVA/API/HIJACK_SESSION") {
         let sessionId = shortid.generate() + "_SID";
         if(_BORROWED){
-            client.publish("PASSIST/ERROR/NULL", JSON.stringify({ "reason": "SES_BUS", "ts": new Date().getTime() }));
+            client.publish("YAVA/ERROR/NULL", JSON.stringify({ "reason": "SES_BUS", "ts": new Date().getTime() }));
         } else {
             _BORROWED = true;
             SESSIONS[sessionId] = {
                 owner: "API"
             };
-            client.publish("PASSIST/HOTWORD_DETECTOR/STOP", JSON.stringify({ ts: new Date().getTime() }));
+            client.publish("YAVA/HOTWORD_DETECTOR/STOP", JSON.stringify({ ts: new Date().getTime() }));
 
             // Reset failsafe to 1 minute, in case the client library never finishes closing this session
             SESSIONS[sessionId].inactiveTimeout = setTimeout(function (_sessionId){ 
@@ -82,11 +82,11 @@ client.on('message', function (topic, message) {
             }.bind(this, sessionId), API_SESSION_TIMEOUT_MS);
 
             setTimeout(() => {
-                client.publish("PASSIST/API/HIJACK_SESSION_READY/" + sessionId, JSON.stringify({ ts: new Date().getTime() }));
+                client.publish("YAVA/API/HIJACK_SESSION_READY/" + sessionId, JSON.stringify({ ts: new Date().getTime() }));
             }, 1000)
         }
     }
-    else if (topic.indexOf("PASSIST/API/RELEASE_SESSION/") == 0) {
+    else if (topic.indexOf("YAVA/API/RELEASE_SESSION/") == 0) {
         let sessionId = topic.split("/").pop();
         if(SESSIONS[sessionId]){
            if(SESSIONS[sessionId].inactiveTimeout){
@@ -95,9 +95,9 @@ client.on('message', function (topic, message) {
             delete SESSIONS[sessionId];
         }
         _BORROWED = false;
-        client.publish("PASSIST/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
+        client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     }
-    else if (topic.indexOf("PASSIST/ERROR/") == 0) {
+    else if (topic.indexOf("YAVA/ERROR/") == 0) {
         let sessionId = topic.split("/").pop();
         onSessionError(sessionId, JSON.parse(message.toString("UTF-8")));
     }
@@ -127,7 +127,7 @@ hotwordDetected = (sessionId) => {
         owner: "HOTWORD"
     };
 
-    client.publish("PASSIST/RECORD_SPEECH/START/" + sessionId, JSON.stringify({
+    client.publish("YAVA/RECORD_SPEECH/START/" + sessionId, JSON.stringify({
         ts: new Date().getTime()
     }));
 }
@@ -137,7 +137,7 @@ hotwordDetected = (sessionId) => {
  */
 speechCaptureDone = (sessionId, payload) => {
     if(SESSIONS[sessionId].owner == "HOTWORD"){
-        client.publish("PASSIST/STT/PROCESS/" + sessionId, payload);
+        client.publish("YAVA/STT/PROCESS/" + sessionId, payload);
     } else {
         _extendSessionTimeout(sessionId);
     }
@@ -148,7 +148,7 @@ speechCaptureDone = (sessionId, payload) => {
  */
 speechToTextDone = (sessionId, payload) => {
     if(SESSIONS[sessionId].owner == "HOTWORD"){
-        client.publish("PASSIST/NLP/MATCH/" + sessionId, JSON.stringify({ text: payload, ts: new Date().getTime() }));
+        client.publish("YAVA/NLP/MATCH/" + sessionId, JSON.stringify({ text: payload, ts: new Date().getTime() }));
     } else {
         _extendSessionTimeout(sessionId);
     }
@@ -161,9 +161,9 @@ onNlpDone = (sessionId, payload) => {
     if(SESSIONS[sessionId].owner == "HOTWORD"){
         console.log(JSON.stringify(payload, null, 4))
         if(payload.intent.length == 0){
-            client.publish("PASSIST/TTS/SAY/" + sessionId, JSON.stringify({ text: "Sorry, but I did not understand you.", ts: new Date().getTime() }));
+            client.publish("YAVA/TTS/SAY/" + sessionId, JSON.stringify({ text: "Sorry, but I did not understand you.", ts: new Date().getTime() }));
         } else {
-            client.publish("PASSIST/API/BRODCAST_INTENT/" + sessionId, JSON.stringify(payload));
+            client.publish("YAVA/API/BRODCAST_INTENT/" + sessionId, JSON.stringify(payload));
             // Start the timer, if nothing happened within the next 10 seconds, 
             // reset the session and start hotword detection
             SESSIONS[sessionId].inactiveTimeout = setTimeout(function (_sessionId){ 
@@ -181,7 +181,7 @@ onNlpDone = (sessionId, payload) => {
 textToSpeechDone = (sessionId) => {
     if(SESSIONS[sessionId].owner == "HOTWORD"){
         delete SESSIONS[sessionId];
-        client.publish("PASSIST/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
+        client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     } else {
         _extendSessionTimeout(sessionId);
     }
@@ -214,7 +214,7 @@ onSessionError = (sessionId, payload) => {
                 errMessage = "There was an error, please try again.";
         }
 
-        client.publish("PASSIST/TTS/SAY/" + sessionId, JSON.stringify({ text: errMessage, ts: new Date().getTime() }));
+        client.publish("YAVA/TTS/SAY/" + sessionId, JSON.stringify({ text: errMessage, ts: new Date().getTime() }));
     } else {
         _extendSessionTimeout(sessionId);
     }
@@ -226,12 +226,12 @@ onSessionError = (sessionId, payload) => {
 onSessionExpiration = (sessionId) => {
     if(SESSIONS[sessionId] && SESSIONS[sessionId].owner == "HOTWORD"){
         delete SESSIONS[sessionId];
-        client.publish("PASSIST/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
+        client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ ts: new Date().getTime() }));
     } else {
         _BORROWED = false;
         delete SESSIONS[sessionId];
-        client.publish("PASSIST/API/TIMEOUT/" + sessionId, JSON.stringify({ "ts": new Date().getTime(), "reason": "SES_TIO" }));
-        client.publish("PASSIST/HOTWORD_DETECTOR/START", JSON.stringify({ "ts": new Date().getTime() }));
+        client.publish("YAVA/API/TIMEOUT/" + sessionId, JSON.stringify({ "ts": new Date().getTime(), "reason": "SES_TIO" }));
+        client.publish("YAVA/HOTWORD_DETECTOR/START", JSON.stringify({ "ts": new Date().getTime() }));
     }
 }
 

@@ -3,7 +3,7 @@
 ## Table of contents
 
 * [Prerequisit](#prereq)  
-* [Install the Private Voice Assistant](#install_pva)  
+* [Install the Private Voice Assistant](#install_yava)  
 
 ## Prerequisit<a name="prereq"></a>
 
@@ -64,7 +64,7 @@ For docker-compose, we will use `pip` to install it on our Raspberry Pi. Therefo
 sudo apt-get -y install python-setuptools && sudo easy_install pip && sudo pip install docker-compose
 ```
 
-## Install the Private Voice Assistant<a name="install_pva"></a>
+## Install the Private Voice Assistant<a name="install_yava"></a>
 
 Clone the repository to your Raspberry Pi:
 

@@ -1,109 +1,109 @@
 version: "3"
 
 networks:
-  pva-network:
+  yava-network:
     driver: bridge
 
 services:
 
   # ************************ MQTT **************************
-  pva-mosquitto:
-    image: md76/pva-mosquitto:${PVA_VERSION}-arm
-    container_name: pva-mosquitto
+  yava-mosquitto:
+    image: md76/yava-mosquitto:${YAVA_VERSION}-arm
+    container_name: yava-mosquitto
     restart: always
     ports:
       - 1883:1883
     volumes:
       - ./resources/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
     networks:
-      - pva-network
+      - yava-network
     
   # ************************ ORCHESTRATOR **************************
 
-  pva-orchestrator:
-    image: md76/pva-orchestrator:${PVA_VERSION}-arm
+  yava-orchestrator:
+    image: md76/yava-orchestrator:${YAVA_VERSION}-arm
     restart: always
-    container_name: pva-orchestrator
+    container_name: yava-orchestrator
     environment:
       - NODE_ENV=production
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-mosquitto
+      - yava-mosquitto
 
   # ************************ TTS **************************
 
-  pva-tts:
-    image: md76/pva-tts-mimic:${PVA_VERSION}-arm
+  yava-tts:
+    image: md76/yava-tts-mimic:${YAVA_VERSION}-arm
     restart: always
-    container_name: pva-tts
+    container_name: yava-tts
     devices:
       - /dev/snd:/dev/snd
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 
   # ************************ CAPTURE SPEECH **************************
 
-  pva-capture-speech:
-    image: md76/pva-capture-speech:${PVA_VERSION}-arm
+  yava-capture-speech:
+    image: md76/yava-capture-speech:${YAVA_VERSION}-arm
     restart: always
-    container_name: pva-capture-speech
+    container_name: yava-capture-speech
     devices:
       - /dev/snd:/dev/snd
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 
   # ************************ HOTWORD **************************
     
-  # pva-hotword:
-  #   image: md76/pva-hotword-snowboy:${PVA_VERSION}-arm
+  # yava-hotword:
+  #   image: md76/yava-hotword-snowboy:${YAVA_VERSION}-arm
   #   restart: always
-  #   container_name: pva-hotword
+  #   container_name: yava-hotword
   #   devices:
   #     - /dev/snd:/dev/snd
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   volumes:
   #     - ./resources/snowboy/models/Hotword.pmdl:/usr/src/app/models/Hotword.pmdl
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator
 
-  # pva-hotword:
-  #   image: md76/pva-hotword-porcupine:${PVA_VERSION}-arm
+  # yava-hotword:
+  #   image: md76/yava-hotword-porcupine:${YAVA_VERSION}-arm
   #   restart: always
-  #   container_name: pva-hotword
+  #   container_name: yava-hotword
   #   environment:
   #     - SYSTEM_HOTWORDS=grapefruit,grasshopper
   #   devices:
   #     - /dev/snd:/dev/snd
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator
 
   # ************************ STT **************************
 
-  # pva-stt:
-  #   image: md76/pva-stt-wit:${PVA_VERSION}-arm
+  # yava-stt:
+  #   image: md76/yava-stt-wit:${YAVA_VERSION}-arm
   #   restart: always
-  #   container_name: pva-stt
+  #   container_name: yava-stt
   #   # environment:
   #   #   - STT_ALT=1
   #   volumes:
   #     - ./resources/wit/key.txt:/usr/src/app/key.txt
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator
 
-  # pva-stt:
-  #   image: md76/pva-stt-pocketsphinx:${PVA_VERSION}-arm
+  # yava-stt:
+  #   image: md76/yava-stt-pocketsphinx:${YAVA_VERSION}-arm
   #   restart: always
-  #   container_name: pva-stt
+  #   container_name: yava-stt
   #   environment:
   #     - PSX_LANGUAGE_PATH=model/en-us
   #     - PSX_HMM_PATH=model/en-us/en-us
@@ -113,50 +113,50 @@ services:
   #   volumes:
   #     - ./resources/pocketsphinx/model:/usr/src/app/model
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator
 
-  # pva-stt:
-  #   image: md76/pva-stt-google:${PVA_VERSION}-arm
+  # yava-stt:
+  #   image: md76/yava-stt-google:${YAVA_VERSION}-arm
   #   restart: always
-  #   container_name: pva-stt
+  #   container_name: yava-stt
   #   # environment:
   #   #   - STT_ALT=1
   #   volumes:
   #     - ./resources/google/credentials.json:/usr/src/app/credentials.json
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator
 
   
   # ************************ NLU **************************
   
-  # pva-nlu:
-  #   image: md76/pva-nlu-light:${PVA_VERSION}-arm
+  # yava-nlu:
+  #   image: md76/yava-nlu-light:${YAVA_VERSION}-arm
   #   restart: always
-  #   container_name: pva-nlu
+  #   container_name: yava-nlu
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   volumes:
   #     - ./resources/nlu/models:/usr/src/app/models
   #     - ./resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml
   #   environment:
   #     - LANGUAGE=en
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator
 
-  # pva-nlu:
-  #   image: md76/pva-nlu-spacy:${PVA_VERSION}-en-sm-arm
+  # yava-nlu:
+  #   image: md76/yava-nlu-spacy:${YAVA_VERSION}-en-sm-arm
   #   restart: always
-  #   container_name: pva-nlu
+  #   container_name: yava-nlu
   #   networks:
-  #     - pva-network
+  #     - yava-network
   #   volumes:
   #     - ./resources/nlu/models:/usr/src/app/models
   #   environment:
   #     - LANGUAGE=en
   #     - SPACY_MODEL=en_core_web_sm
   #   depends_on:
-  #     - pva-orchestrator
+  #     - yava-orchestrator

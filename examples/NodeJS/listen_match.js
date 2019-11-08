@@ -1,26 +1,26 @@
-let PrivateVoiceAssistant = require("../../src/libraries/NodeJS/pva/index");
+let Yava = require("../../src/libraries/NodeJS/yava/index");
 
 /**
- * When client connects successfully to the PVA instance
+ * When client connects successfully to the YAVA instance
  */
-PrivateVoiceAssistant.onConnect(() => {
+Yava.onConnect(() => {
     console.log("=> Connected");
 });
 
 /**
- * When client is disconnected from the PVA instance
+ * When client is disconnected from the YAVA instance
  */
-PrivateVoiceAssistant.onDisconnect(() => {
+Yava.onDisconnect(() => {
     console.log("=> Disconnected");
 });
 
 /**
- * Callback triggered when PVA NLU recognizes an intent.
+ * Callback triggered when YAVA NLU recognizes an intent.
  * 
  * Parameter "assistantSession": The assistant session object 
- * that can be used to interact with PVA
+ * that can be used to interact with YAVA
  */
-PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
+Yava.onInitialIntent((assistantSession) => {
     (async() => {
         try{
             switch(assistantSession.data.intent){
@@ -48,4 +48,4 @@ PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
 });
 
 // Now connect
-PrivateVoiceAssistant.connect("192.168.1.42");
+Yava.connect("192.168.1.42");

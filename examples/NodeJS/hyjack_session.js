@@ -1,15 +1,15 @@
-let PrivateVoiceAssistant = require("../../src/libraries/NodeJS/pva/index");
+let Yava = require("../../src/libraries/NodeJS/yava/index");
 
 /**
- * When client connects successfully to the PVA instance
+ * When client connects successfully to the YAVA instance
  */
-PrivateVoiceAssistant.onConnect(() => {
+Yava.onConnect(() => {
     console.log("=> Connected");
     
     (async() => {
-        let assistantSession = await PrivateVoiceAssistant.hijackSession();
+        let assistantSession = await Yava.hijackSession();
 
-        // Now use the assistantSession object to interact with PVA...
+        // Now use the assistantSession object to interact with YAVA...
 
         // Release the assistant session
         assistantSession.done();
@@ -18,11 +18,11 @@ PrivateVoiceAssistant.onConnect(() => {
 });
 
 /**
- * When client is disconnected from the PVA instance
+ * When client is disconnected from the YAVA instance
  */
-PrivateVoiceAssistant.onDisconnect(() => {
+Yava.onDisconnect(() => {
     console.log("=> Disconnected");
 });
 
 // Now connect
-PrivateVoiceAssistant.connect("192.168.1.42");
+Yava.connect("192.168.1.42");

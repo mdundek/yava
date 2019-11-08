@@ -33,7 +33,7 @@ def on_connect(client, userdata, flags, rc):
             language=os.environ['LANGUAGE']
         )
 
-        client.subscribe("PASSIST/NLP/MATCH/+")
+        client.subscribe("YAVA/NLP/MATCH/+")
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
@@ -41,7 +41,7 @@ def on_connect(client, userdata, flags, rc):
     global firstConnect
     if firstConnect is False:
         firstConnect = True
-        client.publish("PASSIST/NLP/READY", "")
+        client.publish("YAVA/NLP/READY", "")
 
 
 def on_disconnect(client, userdata, rc):
@@ -53,7 +53,7 @@ def on_disconnect(client, userdata, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    if msg.topic.startswith("PASSIST/NLP/MATCH/") == True:
+    if msg.topic.startswith("YAVA/NLP/MATCH/") == True:
         
         sessionId = msg.topic.split("/").pop()
         m_decode = str(msg.payload.decode("utf-8", "ignore"))
@@ -66,9 +66,9 @@ def on_message(client, userdata, msg):
 
         if nlpResult is not None:
             nlpResult["utterance"] = m_in["text"]
-            client.publish("PASSIST/NLP/MATCH_DONE/" + sessionId, json.dumps(nlpResult))
+            client.publish("YAVA/NLP/MATCH_DONE/" + sessionId, json.dumps(nlpResult))
         else:
-            client.publish("PASSIST/NLP/MATCH_DONE/" + sessionId, json.dumps({
+            client.publish("YAVA/NLP/MATCH_DONE/" + sessionId, json.dumps({
                 "intent": "",
                 "entities": "",
                 "utterance": m_in["text"]
@@ -79,6 +79,6 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect
 
-client.connect("pva-mosquitto", 1883, 60)
+client.connect("yava-mosquitto", 1883, 60)
 logger.info("MQTT Connecting...")
 client.loop_forever()

@@ -4,36 +4,36 @@ var mqtt = require('mqtt');
 let API_SESSION_OBJECT = null;
 let _BORROWED_FLAG = false;
 
-let _INITIAL_PVA_READY = false;
-let _INITIAL_PVA_READY_INTERVAL = null;
+let _INITIAL_YAVA_READY = false;
+let _INITIAL_YAVA_READY_INTERVAL = null;
 
 /**
- * PrivateVoiceAssistant
+ * Yava
  */
-class PrivateVoiceAssistant {
+class Yava {
     static connect(host) {
         this.host = host;
     
         this.client = mqtt.connect('mqtt://' + this.host);
 
         this.client.on('connect',  () => {
-            this.client.subscribe('PASSIST/#');
+            this.client.subscribe('YAVA/#');
 
-            this.client.publish("PASSIST/PVA/GET_STATUS", "");
-            if(!_INITIAL_PVA_READY_INTERVAL){
-                _INITIAL_PVA_READY_INTERVAL = setInterval(() => {
-                    if(!_INITIAL_PVA_READY)
-                        this.client.publish("PASSIST/PVA/GET_STATUS", "");
+            this.client.publish("YAVA/YAVA/GET_STATUS", "");
+            if(!_INITIAL_YAVA_READY_INTERVAL){
+                _INITIAL_YAVA_READY_INTERVAL = setInterval(() => {
+                    if(!_INITIAL_YAVA_READY)
+                        this.client.publish("YAVA/YAVA/GET_STATUS", "");
                 }, 3000);
             }
         });
 
         this.client.on('offline',  () => {
-            _INITIAL_PVA_READY = false;
+            _INITIAL_YAVA_READY = false;
 
-            if(_INITIAL_PVA_READY_INTERVAL){
-                clearInterval(_INITIAL_PVA_READY_INTERVAL);
-                _INITIAL_PVA_READY_INTERVAL = null;
+            if(_INITIAL_YAVA_READY_INTERVAL){
+                clearInterval(_INITIAL_YAVA_READY_INTERVAL);
+                _INITIAL_YAVA_READY_INTERVAL = null;
             }
 
             this.connected = false;
@@ -52,16 +52,16 @@ class PrivateVoiceAssistant {
 
         this.client.on('message', (topic, message) => {
             
-            if (topic == "PASSIST/PVA/STATUS_OK") {
+            if (topic == "YAVA/YAVA/STATUS_OK") {
                 this.connected = true;
-                if(!_INITIAL_PVA_READY && this.callback.onConnect){
+                if(!_INITIAL_YAVA_READY && this.callback.onConnect){
                    this.callback.onConnect();
-                   _INITIAL_PVA_READY = true;
+                   _INITIAL_YAVA_READY = true;
                 }
-            } else if (topic == "PASSIST/PVA/STATUS_KO") {
+            } else if (topic == "YAVA/YAVA/STATUS_KO") {
                 this.connected = false;
             }
-            else if (topic.indexOf("PASSIST/API/BRODCAST_INTENT/") == 0) {
+            else if (topic.indexOf("YAVA/API/BRODCAST_INTENT/") == 0) {
                 
                 if(this.callback.intentEventCallback){
                     let sessionId = topic.split("/").pop();
@@ -71,7 +71,7 @@ class PrivateVoiceAssistant {
                     this.callback.intentEventCallback(sessionObject);
                 }
             }
-            else if(topic.indexOf("PASSIST/API/HIJACK_SESSION_READY/") == 0){
+            else if(topic.indexOf("YAVA/API/HIJACK_SESSION_READY/") == 0){
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.action == "hijack"){
                     let sessionId = topic.split("/").pop();
                     let _cb = API_SESSION_OBJECT.next;
@@ -83,20 +83,20 @@ class PrivateVoiceAssistant {
                     
                 }
             } 
-            else if(topic.indexOf("PASSIST/TTS/SAY_DONE/") == 0){
+            else if(topic.indexOf("YAVA/TTS/SAY_DONE/") == 0){
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.action == "speekOut"){
                     let _cb = API_SESSION_OBJECT.next;
                     API_SESSION_OBJECT = null;
                     _cb();
                 }
             } 
-            else if(topic.indexOf("PASSIST/RECORD_SPEECH/CAPTURED/") == 0) {
+            else if(topic.indexOf("YAVA/RECORD_SPEECH/CAPTURED/") == 0) {
                 if(API_SESSION_OBJECT && (API_SESSION_OBJECT.action == "listenAndTranscribe" || API_SESSION_OBJECT.action == "listenAndMatchIntent")){
                     let sessionId = topic.split("/").pop();
-                    this.client.publish("PASSIST/"+(API_SESSION_OBJECT.stt_alt ? "STT_ALT":"STT")+"/PROCESS/" + sessionId, message);
+                    this.client.publish("YAVA/"+(API_SESSION_OBJECT.stt_alt ? "STT_ALT":"STT")+"/PROCESS/" + sessionId, message);
                 }
             }
-            else if(topic.indexOf("PASSIST/STT/PROCESS_DONE/") == 0 || topic.indexOf("PASSIST/STT_ALT/PROCESS_DONE/") == 0) {
+            else if(topic.indexOf("YAVA/STT/PROCESS_DONE/") == 0 || topic.indexOf("YAVA/STT_ALT/PROCESS_DONE/") == 0) {
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.action == "listenAndTranscribe"){
                     let sessionId = topic.split("/").pop();
                     let _cb = API_SESSION_OBJECT.next;
@@ -104,17 +104,17 @@ class PrivateVoiceAssistant {
                     _cb(message.toString("UTF-8"));
                 } else if(API_SESSION_OBJECT && API_SESSION_OBJECT.action == "listenAndMatchIntent"){
                     let sessionId = topic.split("/").pop();
-                    this.client.publish("PASSIST/NLP/MATCH/" + sessionId, JSON.stringify({ text: message.toString("UTF-8"), ts: new Date().getTime() }));
+                    this.client.publish("YAVA/NLP/MATCH/" + sessionId, JSON.stringify({ text: message.toString("UTF-8"), ts: new Date().getTime() }));
                 }
             }
-            else if(topic.indexOf("PASSIST/NLP/MATCH_DONE/") == 0) {
+            else if(topic.indexOf("YAVA/NLP/MATCH_DONE/") == 0) {
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.action == "listenAndMatchIntent"){
                     let sessionId = topic.split("/").pop();
                     let _cb = API_SESSION_OBJECT.next;
                     API_SESSION_OBJECT = null;
                     _cb(JSON.parse(message.toString("UTF-8")));
                 }
-            } else if (topic.indexOf("PASSIST/ERROR/") == 0) {
+            } else if (topic.indexOf("YAVA/ERROR/") == 0) {
                 let sessionId = topic.split("/").pop();
                 if(API_SESSION_OBJECT && (sessionId == "NULL" || API_SESSION_OBJECT.sessionId == sessionId)){
 
@@ -137,7 +137,7 @@ class PrivateVoiceAssistant {
                         _err(JSON.parse(message.toString("UTF-8")));
                     }
                 }
-            } else if (topic.indexOf("PASSIST/API/TIMEOUT/") == 0) {
+            } else if (topic.indexOf("YAVA/API/TIMEOUT/") == 0) {
                 let sessionId = topic.split("/").pop();
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.sessionId == sessionId){
                     let _next = API_SESSION_OBJECT.next;
@@ -166,7 +166,7 @@ class PrivateVoiceAssistant {
                 return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
             }
             if(!this.connected) {
-                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
+                return rej({ reason: 'YAVA_OFL', ts: new Date().getTime() });
             }
 
             _BORROWED_FLAG = true;
@@ -176,17 +176,17 @@ class PrivateVoiceAssistant {
                 "next": res,
                 "err": rej
             };
-            this.client.publish("PASSIST/API/HIJACK_SESSION", "");
+            this.client.publish("YAVA/API/HIJACK_SESSION", "");
         });
     }
 }
 
-PrivateVoiceAssistant.callback = {};
-PrivateVoiceAssistant.connected = false;
-PrivateVoiceAssistant.host = null;
-PrivateVoiceAssistant.client = null;
+Yava.callback = {};
+Yava.connected = false;
+Yava.host = null;
+Yava.client = null;
 
-module.exports = PrivateVoiceAssistant;
+module.exports = Yava;
 
 /**
  * APISession
@@ -201,8 +201,8 @@ class APISession {
     
     speekOut(text) {
         return new Promise((res, rej) => {
-            if(!PrivateVoiceAssistant.connected) {
-                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
+            if(!Yava.connected) {
+                return rej({ reason: 'YAVA_OFL', ts: new Date().getTime() });
             }
             if(API_SESSION_OBJECT){
                 return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
@@ -214,17 +214,17 @@ class APISession {
                 "err": rej
             };
             if(!_BORROWED_FLAG){
-                this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                this._client.publish("YAVA/API/BORROW_SESSION/" + this.sessionId, "");
                 _BORROWED_FLAG = true;
             }
-            this._client.publish("PASSIST/TTS/SAY/" + this.sessionId, JSON.stringify({ text: text, ts: new Date().getTime() }));
+            this._client.publish("YAVA/TTS/SAY/" + this.sessionId, JSON.stringify({ text: text, ts: new Date().getTime() }));
         });
     }
 
     listenAndTranscribe(opt) {
         return new Promise((res, rej) => {
-            if(!PrivateVoiceAssistant.connected) {
-                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
+            if(!Yava.connected) {
+                return rej({ reason: 'YAVA_OFL', ts: new Date().getTime() });
             }
             if(API_SESSION_OBJECT){
                 return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
@@ -239,17 +239,17 @@ class APISession {
                 API_SESSION_OBJECT.stt_alt = true;
 
             if(!_BORROWED_FLAG){
-                this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                this._client.publish("YAVA/API/BORROW_SESSION/" + this.sessionId, "");
                 _BORROWED_FLAG = true;
             }
-            this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
+            this._client.publish("YAVA/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
         });
     }
 
     listenAndMatchIntent(opt) {
         return new Promise((res, rej) => {
-            if(!PrivateVoiceAssistant.connected) {
-                return rej({ reason: 'PVA_OFL', ts: new Date().getTime() });
+            if(!Yava.connected) {
+                return rej({ reason: 'YAVA_OFL', ts: new Date().getTime() });
             }
             if(API_SESSION_OBJECT){
                 return rej({ reason: 'SES_BUS', ts: new Date().getTime() });
@@ -264,16 +264,16 @@ class APISession {
                 API_SESSION_OBJECT.stt_alt = true;
                 
             if(!_BORROWED_FLAG){
-                this._client.publish("PASSIST/API/BORROW_SESSION/" + this.sessionId, "");
+                this._client.publish("YAVA/API/BORROW_SESSION/" + this.sessionId, "");
                 _BORROWED_FLAG = true;
             }
-            this._client.publish("PASSIST/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
+            this._client.publish("YAVA/RECORD_SPEECH/START/" + this.sessionId, JSON.stringify({ts: new Date().getTime()}));
         });
     }
 
     done() {
-        if(PrivateVoiceAssistant.connected) {
-            this._client.publish("PASSIST/API/RELEASE_SESSION/" + this.sessionId, "");
+        if(Yava.connected) {
+            this._client.publish("YAVA/API/RELEASE_SESSION/" + this.sessionId, "");
         }
         _BORROWED_FLAG = false;        
     }

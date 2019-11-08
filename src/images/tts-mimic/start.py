@@ -12,7 +12,7 @@ firstConnect = False
 
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
-    client.subscribe("PASSIST/TTS/SAY/+")
+    client.subscribe("YAVA/TTS/SAY/+")
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
@@ -20,7 +20,7 @@ def on_connect(client, userdata, flags, rc):
     global firstConnect
     if firstConnect is False:
         firstConnect = True
-        client.publish("PASSIST/TTS/READY", "")
+        client.publish("YAVA/TTS/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))
@@ -29,20 +29,20 @@ def on_disconnect(client, userdata, rc):
     MQTT_CONNECTED = False
 
 def on_message(client, userdata, msg):
-    if msg.topic.startswith("PASSIST/TTS/SAY/") == True:
+    if msg.topic.startswith("YAVA/TTS/SAY/") == True:
         sessionId = msg.topic.split("/").pop()
 
         m_decode = str(msg.payload.decode("utf-8", "ignore"))
         m_in = json.loads(m_decode)  # decode json data
         subprocess.run(["./mimic1/mimic", "-t", m_in["text"]])
-        client.publish("PASSIST/TTS/SAY_DONE/" + sessionId, "")
+        client.publish("YAVA/TTS/SAY_DONE/" + sessionId, "")
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect
 
-client.connect("pva-mosquitto", 1883, 60)
+client.connect("yava-mosquitto", 1883, 60)
 
 logger.info("MQTT Connecting...")
 

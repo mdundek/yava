@@ -66,7 +66,7 @@ Once you have finished your training set definitions, run the following command 
 docker run --rm \
   -v $PWD/resources/nlu/models:/usr/src/app/models \
   -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml \
-  md76/pva-nlu-light:0.9-arm \
+  md76/yava-nlu-light:0.9-arm \
   python train.py
 ```
 
@@ -82,7 +82,7 @@ Once you have finished your training set definitions, run the following command 
 docker run --rm \
   -v $PWD/resources/nlu/models:/usr/src/app/models \
   -v $PWD/resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml \
-  md76/pva-nlu-spacy:0.9-en-sm-arm \
+  md76/yava-nlu-spacy:0.9-en-sm-arm \
   python train.py
 ```
 
@@ -101,7 +101,7 @@ Once the training is done, you will see a new files in the folder `resources/nlu
 To run the voice assistant, simply execute the following command from the repository root directory:
 
 ```shell
-COMPOSE_HTTP_TIMEOUT=300 PVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> up -d
+COMPOSE_HTTP_TIMEOUT=300 YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> up -d
 ```
 
 > If you run the assistant for the first time, then docker will have to download all required images first. Be patient, this might take a while depending on your connection speed (Raspberries tend to be slower, except for the RPi 4 due to it's revised bus architecture). 
@@ -111,13 +111,13 @@ This will also restart the assistant automatically on reboot, untill you explici
 To see the broker logs once started (ex. for debugging):
 
 ```shell
-PVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> logs -f
+YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> logs -f
 ```
 
 To stop the assistant:
 
 ```shell
-PVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
+YAVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
 ```
 
 ## Use the client libraries<a name="clientlib"></a>
@@ -125,38 +125,38 @@ PVA_VERSION=0.9.1 docker-compose -f <YOUR DOCKER COMPOSE YML FILE> down
 ### NodeJS<a name="libnode"></a>
 
 For now, the client library is not available on NPM. this will change soon wonce I get the time to do so.  
-In the meanwhile, simply copy the folder `src/libraries/NodeJS/pva` to your NodeJS project.  
+In the meanwhile, simply copy the folder `src/libraries/NodeJS/yava` to your NodeJS project.  
 
-Require the client library and connect to the PVA host:
+Require the client library and connect to the YAVA host:
 
 ```node
-let PrivateVoiceAssistant = require("./pva/index");
+let Yava = require("./yava/index");
 ```
 
-Register to PVA events:
+Register to YAVA events:
 
 ```node
 /**
- * When client connects successfully to the PVA instance
+ * When client connects successfully to the YAVA instance
  */
-PrivateVoiceAssistant.onConnect(() => {
+Yava.onConnect(() => {
 
 });
 
 /**
- * When client is disconnected from the PVA instance
+ * When client is disconnected from the YAVA instance
  */
-PrivateVoiceAssistant.onDisconnect(() => {
+Yava.onDisconnect(() => {
     
 });
 
 /**
- * Callback triggered when PVA NLU recognizes an intent.
+ * Callback triggered when YAVA NLU recognizes an intent.
  * 
  * Parameter "assistantSession": The assistant session object 
- * that can be used to interact with PVA
+ * that can be used to interact with YAVA
  */
-PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
+Yava.onInitialIntent((assistantSession) => {
     (async() => {
       try{
           switch(assistantSession.data.intent){
@@ -204,7 +204,7 @@ PrivateVoiceAssistant.onInitialIntent((assistantSession) => {
 });
 
 // Now connect
-PrivateVoiceAssistant.connect("<IP OF HOST THAT RUNS PVA>");
+Yava.connect("<IP OF HOST THAT RUNS YAVA>");
 ```
 
 Other methods for the __assistantSession__ object:
@@ -228,9 +228,9 @@ If you want to initiate a new assistant session manually, you can do so using th
 
 ```node
 
-if(PrivateVoiceAssistant.connected){
+if(Yava.connected){
     try{
-        let assistantSession = await PrivateVoiceAssistant.hijackSession();
+        let assistantSession = await Yava.hijackSession();
         
         await assistantSession.speekOut("I just started a session on my own");
         
@@ -244,7 +244,7 @@ if(PrivateVoiceAssistant.connected){
 }
 ```
 
-> IMPORTANT: PVA is not designed to be a multi tenant voice assistant. Use the library syncroniously, one session at a time.
+> IMPORTANT: YAVA is not designed to be a multi tenant voice assistant. Use the library syncroniously, one session at a time.
 
 
 ### Python<a name="libpy"></a>
@@ -253,5 +253,5 @@ if(PrivateVoiceAssistant.connected){
 docker run --rm \
   -v $PWD/resources/nlu/models:/usr/src/app/models \
   -v $PWD/resources/nlu/training_data/train.yaml:/usr/src/app/training_data/train.yaml \
-  md76/pva-nlu-light:0.9-arm \
+  md76/yava-nlu-light:0.9-arm \
   python train.py

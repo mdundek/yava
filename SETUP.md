@@ -65,18 +65,18 @@ Attention, only one hotword file is allowed the `resources/snowboy/models` folde
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Snowboy__:  
 
 ```yaml
-  pva-hotword:
-    image: md76/pva-hotword-snowboy:0.9-arm
+  yava-hotword:
+    image: md76/yava-hotword-snowboy:0.9-arm
     restart: always
-    container_name: pva-hotword
+    container_name: yava-hotword
     devices:
       - /dev/snd:/dev/snd
     networks:
-      - pva-network
+      - yava-network
     volumes:
       - ./resources/snowboy/models/<YOUR HOTWORD MODEL FILE>:/usr/src/app/models/Hotword.pmdl
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 Replace the `<YOUR HOTWORD MODEL FILE>` section with the actual file you downloaded from the Snowboy website, otherwise set it as `Hotword.pmdl`for the default `Hey Alice`hotword.
@@ -91,18 +91,18 @@ By default, Porcupine comes with the following available hotwords out of the box
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __porcupine__:  
 
 ```yaml
-  pva-hotword:
-    image: md76/pva-hotword-porcupine:0.9-arm
+  yava-hotword:
+    image: md76/yava-hotword-porcupine:0.9-arm
     restart: always
-    container_name: pva-hotword
+    container_name: yava-hotword
     environment:
       - SYSTEM_HOTWORDS=hey pico,grapefruit,grasshopper
     devices:
       - /dev/snd:/dev/snd
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 Update the environement variable `SYSTEM_HOTWORDS` according to your needs, based on the available public hotwords listed above.   
@@ -131,10 +131,10 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
 
 
 ```yaml
-  pva-stt:
-    image: md76/pva-stt-pocketsphinx:0.9-arm
+  yava-stt:
+    image: md76/yava-stt-pocketsphinx:0.9-arm
     restart: always
-    container_name: pva-stt
+    container_name: yava-stt
     environment:
       - PSX_LANGUAGE_PATH=model/en-us
       - PSX_HMM_PATH=model/en-us/en-us
@@ -143,9 +143,9 @@ In the `docker-compose.yml` config file, locate and uncomment the block that is 
     volumes:
       - ./resources/pocketsphinx/model:/usr/src/app/model
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 To use a different language model, place it under the `resources/pocketsphinx/model` folder, and update the compose configuration block accordingly.
@@ -161,16 +161,16 @@ Once you have your API key, paste it in a file named `key.txt`, in the folder `r
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __WIT STT__:
 
 ```yaml
-  pva-stt:
-    image: md76/pva-stt-wit:0.9-arm
+  yava-stt:
+    image: md76/yava-stt-wit:0.9-arm
     restart: always
-    container_name: pva-stt
+    container_name: yava-stt
     volumes:
       - ./resources/wit/key.txt:/usr/src/app/key.txt
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 ### Configure Google STT<a name="googlestt"></a>
@@ -182,16 +182,16 @@ Once you have the JSON key file, place it under the folder `resources/google/`, 
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __Google STT__:
 
 ```yaml
-pva-stt:
-    image: md76/pva-stt-google:0.9-arm
+yava-stt:
+    image: md76/yava-stt-google:0.9-arm
     restart: always
-    container_name: pva-stt
+    container_name: yava-stt
     volumes:
       - ./resources/google/credentials.json:/usr/src/app/credentials.json
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 ### Configure a second STT container (optional)<a name="secondarystt"></a>
@@ -201,23 +201,23 @@ If you want to use two speech to text engines in your solution, one to run offli
 In the `docker-compose.yml` config file, locate and uncomment the block that you want to use for your secondary __*** STT__ engine, and modify it like in the example below:
 
 ```yaml
-pva-stt-alt:
-    image: pva-stt-google:0.9-arm
+yava-stt-alt:
+    image: yava-stt-google:0.9-arm
     restart: always
-    container_name: pva-stt-alt
+    container_name: yava-stt-alt
     environment:
       - STT_ALT=1
     volumes:
       - ./resources/google/credentials.json:/usr/src/app/credentials.json
     networks:
-      - pva-network
+      - yava-network
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 Note the `-alt` part appended to the block name as well as to the container name, and the extra environement variable set as `STT_ALT=1`. Those modifications apply to any of the three STT engines available.  
 
-To see how you can use the secondary STT engine, refer to the section How to use the PVA client API.
+To see how you can use the secondary STT engine, refer to the section How to use the YAVA client API.
 
 ## 4. NLU<a name="nlu"></a>
 
@@ -233,19 +233,19 @@ Choose one of the two as your main NLU engine, and configure it.
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Light__:
 
 ```yaml
-  pva-nlu:
-    image: md76/pva-nlu-light:0.9-arm
+  yava-nlu:
+    image: md76/yava-nlu-light:0.9-arm
     restart: always
-    container_name: pva-nlu
+    container_name: yava-nlu
     networks:
-      - pva-network
+      - yava-network
     volumes:
       - ./resources/nlu/models:/usr/src/app/models
       - ./resources/nlu/training_data/<YOUR TRAINING YAML FILE>:/usr/src/app/training_data/train.yaml
     environment:
       - LANGUAGE=en
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.
@@ -256,16 +256,16 @@ Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml
 In the `docker-compose.yml` config file, locate and uncomment the block that is used for __NLU Spacy__:
 
 ```yaml
-  pva-nlu:
-    image: md76/pva-nlu-spacy:0.9-en-sm-arm
+  yava-nlu:
+    image: md76/yava-nlu-spacy:0.9-en-sm-arm
     restart: always
-    container_name: pva-nlu
+    container_name: yava-nlu
     networks:
-      - pva-network
+      - yava-network
     volumes:
       - ./resources/nlu/models:/usr/src/app/models
     depends_on:
-      - pva-orchestrator
+      - yava-orchestrator
 ```
 
 Replace the `<YOUR TRAINING YAML FILE>` part with the name of your training yaml file.  

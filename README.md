@@ -1,6 +1,7 @@
-# Private Voice Assistant
+# YAVA (Yet Another Voice Assistant)
 
-The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry Pi 2/3. I have not tested it on a Raspberry Pi 4 or Zero, so if you do test it on those platforms, please let me know how it goes. 
+__YAVA__ is designed to run on a Raspberry Pi 2/3. Other platforms will be supported at some point.  
+I have not tested it on a Raspberry Pi 4 or Zero, so if you do test it on those platforms, please let me know how it goes. 
 
 <img width="100%" src="header.png">
 
@@ -10,7 +11,7 @@ The __Private Voice Assistant__ (aka. __PVA__) is designed to run on a Raspberry
 * [Some of the key features](#keyfeatures)  
 * [Installation](./INSTALL.md)  
 	* [Prerequisit](./INSTALL.md#prereq)  
-	* [Install the Private Voice Assistant](./INSTALL.md#install_pva)  
+	* [Install the Private Voice Assistant](./INSTALL.md#install_yava)  
 * [Configuration & Setup](./SETUP.md)   
 	* [Prepare your configuration files](./SETUP.md#prepare)
 	* [Hotword detector](./SETUP.md#hotword)  
@@ -67,5 +68,5 @@ __Work in progress:__
 
 - Automated mandatory entity slot filling
 - Python & Java client libraries
-- Add Espeak & Google TTS containers as supplement TTS engines
-- Write documentation on how to extend and build new images for PVA
+- Add Espeak & Google TTS images as supplement TTS engines
+- Write documentation on how to extend and build new images for YAVA

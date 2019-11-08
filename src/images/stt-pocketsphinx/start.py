@@ -41,7 +41,7 @@ language_tuple = (hmmd, lmd, dictd)
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
 
-    client.subscribe("PASSIST/"+PROCESS_TOPIC+"/PROCESS/+")
+    client.subscribe("YAVA/"+PROCESS_TOPIC+"/PROCESS/+")
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
@@ -49,7 +49,7 @@ def on_connect(client, userdata, flags, rc):
     global firstConnect
     if firstConnect is False:
         firstConnect = True
-        client.publish("PASSIST/STT/READY", "")
+        client.publish("YAVA/STT/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))
@@ -58,7 +58,7 @@ def on_disconnect(client, userdata, rc):
     MQTT_CONNECTED = False
 
 def on_message(client, userdata, msg):
-    if msg.topic.startswith("PASSIST/"+PROCESS_TOPIC+"/PROCESS/") == True:
+    if msg.topic.startswith("YAVA/"+PROCESS_TOPIC+"/PROCESS/") == True:
         sessionId = msg.topic.split("/").pop()
 
         f = open('new.wav', 'wb')
@@ -71,7 +71,7 @@ def on_message(client, userdata, msg):
         result = r.recognize_sphinx(audio,language=language_tuple)
         
         client.publish(
-            "PASSIST/"+PROCESS_TOPIC+"/PROCESS_DONE/"+sessionId, result
+            "YAVA/"+PROCESS_TOPIC+"/PROCESS_DONE/"+sessionId, result
         )  
 
 clientMqtt = mqtt.Client()
@@ -79,7 +79,7 @@ clientMqtt.on_connect = on_connect
 clientMqtt.on_message = on_message
 clientMqtt.on_disconnect = on_disconnect
 
-clientMqtt.connect("pva-mosquitto", 1883, 60)
+clientMqtt.connect("yava-mosquitto", 1883, 60)
 
 logger.info("MQTT Connecting...")
 

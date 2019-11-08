@@ -40,7 +40,7 @@ def start_hw_detector_thread():
     DETECTOR_RUNNING = True
 
     if MQTT_CONNECTED == True:
-        client.publish("PASSIST/HOTWORD_DETECTOR/START_DONE", "")
+        client.publish("YAVA/HOTWORD_DETECTOR/START_DONE", "")
 
 def stop_hw_detector_thread():
     global detector
@@ -62,7 +62,7 @@ def start_hw_detector():
 def hwdetect_callback():
     if MQTT_CONNECTED == True:
         stop_hw_detector_thread()
-        client.publish("PASSIST/HOTWORD_DETECTOR/EVENT/" + str(uuid.uuid4())[:8], json.dumps({
+        client.publish("YAVA/HOTWORD_DETECTOR/EVENT/" + str(uuid.uuid4())[:8], json.dumps({
             "hotword": True
         }))
 
@@ -70,8 +70,8 @@ def hwdetect_callback():
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT Connected with result code "+str(rc))
 
-    client.subscribe("PASSIST/HOTWORD_DETECTOR/START")
-    client.subscribe("PASSIST/HOTWORD_DETECTOR/STOP")
+    client.subscribe("YAVA/HOTWORD_DETECTOR/START")
+    client.subscribe("YAVA/HOTWORD_DETECTOR/STOP")
 
     global MQTT_CONNECTED
     MQTT_CONNECTED = True
@@ -79,7 +79,7 @@ def on_connect(client, userdata, flags, rc):
     global firstConnect
     if firstConnect is False:
         firstConnect = True
-        client.publish("PASSIST/HOTWORD/READY", "")
+        client.publish("YAVA/HOTWORD/READY", "")
 
 def on_disconnect(client, userdata, rc):
     logger.info("MQTT Disconnected with result code "+str(rc))
@@ -88,10 +88,10 @@ def on_disconnect(client, userdata, rc):
     MQTT_CONNECTED = False
 
 def on_message(client, userdata, msg):
-    if msg.topic == "PASSIST/HOTWORD_DETECTOR/START" and DETECTOR_RUNNING == False:
+    if msg.topic == "YAVA/HOTWORD_DETECTOR/START" and DETECTOR_RUNNING == False:
         start_hw_detector_thread()
 
-    if msg.topic == "PASSIST/HOTWORD_DETECTOR/STOP" and DETECTOR_RUNNING == True:
+    if msg.topic == "YAVA/HOTWORD_DETECTOR/STOP" and DETECTOR_RUNNING == True:
         stop_hw_detector_thread()
 
 # Now staret the detector thread
@@ -102,7 +102,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect
 
-client.connect("pva-mosquitto", 1883, 60)
+client.connect("yava-mosquitto", 1883, 60)
 
 logger.info("MQTT Connecting...")
 
