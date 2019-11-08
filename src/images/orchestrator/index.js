@@ -222,10 +222,10 @@ onSessionError = (sessionId, payload) => {
                 errMessage = "There was a problem with the microphone.";
                 break;
             case "AUD_TMO":
-                errMessage = "Could not understand the user speech imput.";
+                errMessage = "Sorry, I did not understand that.";
                 break;
             case "STT_AUD":
-                errMessage = "I could not understand you, please speek louder next time.";
+                errMessage = "Sorry, I did not understand that.";
                 break;
             case "STT_ERR":
                 errMessage = "There was a problem with the speech to text engine.";

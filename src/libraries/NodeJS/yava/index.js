@@ -142,7 +142,7 @@ class Yava {
                 if(API_SESSION_OBJECT && API_SESSION_OBJECT.sessionId == sessionId){
                     let _err = API_SESSION_OBJECT.err;
                     API_SESSION_OBJECT = null;
-                    _err(null);
+                    _err(JSON.parse(message.toString("UTF-8")));
                 }
             }    
         });
