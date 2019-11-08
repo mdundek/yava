@@ -33,6 +33,8 @@ def on_connect(client, userdata, flags, rc):
             language=os.environ['LANGUAGE']
         )
 
+        matcher.loadModel()
+
         client.subscribe("YAVA/NLP/MATCH/+")
 
     global MQTT_CONNECTED

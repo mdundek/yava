@@ -69,7 +69,17 @@ let server = http.createServer(function (req, res) {
 				res.end();
 			})();
 		});
-	} 
+	}
+	else if (req.url == '/loadModel') {
+		collectRequestData(req, result => {
+			if(matchNlpManager == null){
+				matchNlpManager = new NlpManager();
+				matchNlpManager.load(result.intentsModelFile)
+			} 
+			res.writeHead(200);
+			res.end();
+		});
+    }
     else if (req.url == '/match') {
 		collectRequestData(req, result => {
 			(async() => {
